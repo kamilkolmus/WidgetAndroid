@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2e303b</color>
+    <color name="colorPrimaryDark">#fc3b3858</color>
+    <color name="toolbar">#fc525171</color>
+    <color name="colorAccent">#3b3537</color>
+    <color name="colorpurple">#535073</color>
+    <color name="colorpurple2">#3e3c59</color>
+    <color name="purplelight">#fc72719c</color>
+</resources>

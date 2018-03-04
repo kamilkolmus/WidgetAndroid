@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">Widget</string>
+    <string name="version_info">Created by Izaphe\nVersion 4.1</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">SETTINGS</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="load_apps">loading installed apps</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+
+    <string name="settings">SETTINGS</string>
+    <string name="widget_size">WIDGET SIZE</string>
+    <string name="icon_size">ICON SIZE</string>
+    <string name="radius">RADIUS</string>
+    <string name="scale_y">SCALING THE AXIS Y</string>
+    <string name="alpha">TRANSPARENCY</string>
+    <string name="hide_icons_when_you_select_applications">HIDE ICONS WHEN YOU SELECT APPLICATIONS</string>
+    <string name="widget_boundaries_on">WIDGET BOUNDARIES ON</string>
+    <string name="rotate_random_anim_on">RANDOM ANIMATIONS ON</string>
+    <string name="frequency">FREQUENCY</string>
+    <string name="run_foreground">RUN FOREGROUND</string>
+    <string name="add_widget_to_startup_on">ADD WIDGET TO STARTUP ON</string>
+    <string name="widget_limit"> MODE</string>
+    <string name="widget_color"> COLOR</string>
+    <string name="custom_widget">CUSTOM WIDGET</string>
+
+
+    <string name="selected_applications">SELECTED APPLICATIONS</string>
+    <string name="applications">APPLICATIONS</string>
+    <string name="close_widget">CLOSE WIDGET</string>
+    <string name="close_application">CLOSE APPLICATION</string>
+    <string name="about">ABOUT</string>
+    <string name="add_widget_to_startup_off">ADD WIDGET TO STARTUP OFF</string>
+    <string name="open_widget">OPEN WIDGET</string>
+    <string name="rotate_random_anim_off">RANDOM ANIMATIONS OFF</string>
+    <string name="show_icons_when_you_select_applications">DO NOT HIDE ICONS WHEN YOU SELECT APPLICATIONS</string>
+    <string name="widget_boundaries_off">WIDGET BOUNDARIES OFF</string>
+
+    <string name="file_explorer">FILE EXPLORER</string>
+    <string name="previous">PREVIOUS</string>
+    <string name="close">CLOSE</string>
+    <string name="application_list">APPLICATION LIST</string>
+    <string name="rotate_animation_on">ROTATE ANIMATION ON</string>
+    <string name="rotate_animation_off">ROTATE ANIMATION ON</string>
+
+
+</resources>

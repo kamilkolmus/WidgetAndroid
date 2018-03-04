@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/topPanel">
+        <item
+            android:icon="@drawable/list2"
+            android:id="@+id/applist"
+            android:title="@string/applications" />
+        <item
+            android:icon="@drawable/list1"
+            android:id="@+id/selected_apps"
+            android:title="@string/selected_applications" />
+        <item
+            android:icon="@android:drawable/ic_menu_manage"
+        android:id="@+id/settings"
+        android:title="@string/settings" />
+
+
+    </group>
+    <group android:checkableBehavior="single"
+        android:id="@+id/midPanel"
+       >
+        <item
+            android:icon="@android:drawable/ic_notification_clear_all"
+            android:id="@+id/widget"
+            android:title="@string/close_widget" />
+        <item
+            android:icon="@android:drawable/ic_menu_close_clear_cancel"
+            android:id="@+id/close_app"
+            android:title="@string/close_application" />
+
+
+    </group>
+    <group android:checkableBehavior="single"
+        android:id="@+id/bottomPanel"
+        >
+        <item
+            android:icon="@android:drawable/ic_dialog_info"
+            android:id="@+id/about"
+            android:title="@string/about" />
+        <item
+            android:visible="false"
+            android:id="@+id/test_activity"
+            android:title="testActivity" />
+    </group>
+
+</menu>

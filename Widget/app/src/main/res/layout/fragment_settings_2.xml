@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical"
+    android:fillViewport="true">
+
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/settings"
+        android:gravity="center"
+        android:id="@+id/title"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/colorPrimary"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+
+    <ScrollView
+        android:layout_below="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        android:animateLayoutChanges="true"
+        android:layout_marginBottom="50dp"
+        >
+
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/ll_margin"
+                android:layout_marginRight="@dimen/ll_margin"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="@string/widget_size"
+
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/tv_widget_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="10"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/sb_widget_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginEnd="@dimen/seekbar_margin"
+                android:layout_marginStart="@dimen/seekbar_margin"
+                android:maxHeight="10dp"
+                android:progressDrawable="@drawable/seekbar"
+                android:thumbTintMode="multiply"
+
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="@dimen/ll_margin"
+                android:layout_marginRight="@dimen/ll_margin"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/icon_size"
+
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/tv_icon_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="10"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/sb_icon_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginEnd="@dimen/seekbar_margin"
+                android:layout_marginStart="@dimen/seekbar_margin"
+                android:maxHeight="10dp"
+                android:progressDrawable="@drawable/seekbar"
+                android:thumbTintMode="multiply"
+
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="@dimen/ll_margin"
+                android:layout_marginRight="@dimen/ll_margin"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/radius"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/tv_radius"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+
+                    android:text="10"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/sb_radius"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginEnd="@dimen/seekbar_margin"
+                android:layout_marginStart="@dimen/seekbar_margin"
+                android:maxHeight="10dp"
+                android:progressDrawable="@drawable/seekbar"
+                android:thumbTintMode="multiply" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="@dimen/ll_margin"
+                android:layout_marginRight="@dimen/ll_margin"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/scale_y"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/tv_scale_x"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+
+                    android:text="10"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/sb_scale_x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginEnd="@dimen/seekbar_margin"
+                android:layout_marginStart="@dimen/seekbar_margin"
+                android:alpha="@android:integer/config_longAnimTime"
+                android:maxHeight="10dp"
+                android:progressDrawable="@drawable/seekbar"
+                android:thumbTintMode="multiply" />
+
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="@dimen/ll_margin"
+                android:layout_marginRight="@dimen/ll_margin"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/alpha"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/tv_alpha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+
+                    android:text="10"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/sb_alpha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginEnd="@dimen/seekbar_margin"
+                android:layout_marginStart="@dimen/seekbar_margin"
+                android:alpha="@android:integer/config_longAnimTime"
+                android:maxHeight="10dp"
+                android:progressDrawable="@drawable/seekbar"
+                android:thumbTintMode="multiply" />
+
+            <Switch
+
+                android:id="@+id/sw_hide_icons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:layout_marginTop="15dp"
+                android:gravity="fill"
+                android:text="@string/hide_icons_when_you_select_applications"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="16dp" />
+
+            <Switch
+                android:id="@+id/sw_boundaries"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:layout_marginTop="20dp"
+                android:gravity="fill"
+                android:text="@string/widget_boundaries_on"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="16dp" />
+            <Switch
+                android:id="@+id/sw_rotate_animation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:layout_marginTop="20dp"
+                android:gravity="fill"
+                android:text="@string/rotate_animation_on"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="16dp" />
+            <Switch
+                android:id="@+id/sw_random_animation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:layout_marginTop="20dp"
+                android:gravity="fill"
+                android:text="@string/rotate_random_anim_on"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="16dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ll_rotate_container"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:background="#3fffe600"
+                android:layout_marginBottom="-10dp"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:animateLayoutChanges="true"
+                    android:layout_marginLeft="60dp"
+                    android:paddingBottom="-10dp"
+                    android:layout_marginRight="60dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_weight="10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:text="@string/frequency"
+
+                        android:textColor="@android:color/secondary_text_light"
+                        android:textSize="16dp" />
+
+                    <TextView
+                        android:id="@+id/tv_rotate_freq"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:text="10"
+                        android:textColor="@android:color/secondary_text_light"
+                        android:textSize="16dp" />
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/sb_rotate_freq"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+
+                    android:layout_marginTop="0dp"
+                    android:maxHeight="10dp"
+                    android:progressDrawable="@drawable/seekbar"
+                    android:thumbTintMode="multiply"
+
+                    />
+            </LinearLayout>
+            <Switch
+                android:visibility="gone"
+                android:id="@+id/sw_foreground"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:layout_marginTop="20dp"
+                android:gravity="fill"
+                android:text="@string/run_foreground"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="16dp" />
+            <Switch
+                android:id="@+id/sw_add_startApp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:layout_marginTop="20dp"
+                android:gravity="fill"
+                android:text="@string/add_widget_to_startup_on"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="16dp"
+                android:checked="false" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:layout_marginTop="10dp"
+                android:gravity="fill"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_vertical"
+                    android:text="@string/widget_limit"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp"
+                    />
+                <Spinner
+
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spinner_widget_limit"
+                    android:layout_gravity="center_horizontal" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:layout_marginTop="10dp"
+                android:gravity="fill"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_vertical"
+                    android:text="@string/widget_color"
+                    android:textColor="@android:color/secondary_text_light"
+                    android:textSize="16dp"
+                    />
+                <Spinner
+
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spinner_color"
+                    android:layout_gravity="center_horizontal" />
+
+            </LinearLayout>
+
+            <Button
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/custom_widget"
+                android:id="@+id/b_custom_widget"
+                android:layout_marginBottom="10dp"
+                android:layout_gravity="center_horizontal" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:background="@color/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_unit_id"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+    </com.google.android.gms.ads.AdView>
+</RelativeLayout>

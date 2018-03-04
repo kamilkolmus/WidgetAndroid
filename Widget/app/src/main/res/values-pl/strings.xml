@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">Widget</string>
+    <string name="version_info">Stworzone przez Izaphe\nWersja 4.1</string>
+    <string name="navigation_drawer_open">Otwórz navigation drawer</string>
+    <string name="navigation_drawer_close">Zamknij navigation drawer</string>
+
+    <string name="action_settings">USTAWIENIA</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="settings">USTAWIENIA</string>
+    <string name="widget_size">ROZMIAR</string>
+    <string name="icon_size">ROZMIAR ICON</string>
+    <string name="radius">PROMIEŃ</string>
+    <string name="scale_y">SKALOWANIE NA OSI Y</string>
+    <string name="alpha">PRZEZROCZYSTOŚĆ</string>
+    <string name="hide_icons_when_you_select_applications">SCHOWAJ IKONY PO WYBRANIU APLIKACJI</string>
+    <string name="show_icons_when_you_select_applications">NIE CHOWAJ IKON PO WYBRANIU APLIKACJI</string>
+    <string name="widget_boundaries_on">GRANICE WŁĄCZONE</string>
+    <string name="widget_boundaries_off">GRANICE WYŁĄCZONE</string>
+    <string name="rotate_random_anim_on">LOSOWE ANIMACJE WŁĄCZONE</string>
+    <string name="rotate_random_anim_off">LOSOWE ANIMACJE WYŁĄCZONE</string>
+    <string name="frequency">CZESTOTLIWOŚĆ</string>
+    <string name="run_foreground">RUN FOREGROUND</string>
+    <string name="add_widget_to_startup_on">URUCHOM WIDGET PODCZAS STARTU SYSTEMU WŁĄCZONE</string>
+    <string name="add_widget_to_startup_off">URUCHOM WIDGET PODCZAS STARTU SYSTEMU WYŁĄCZONE</string>
+    <string name="widget_limit">TRYB</string>
+    <string name="widget_color">KOLOR</string>
+    <string name="custom_widget">WYBIERZ WŁASNY WIDGET</string>
+
+
+    <string name="selected_applications">WYBRANE APLIKACJE</string>
+    <string name="applications">APLIKACJE</string>
+    <string name="close_widget">ZAMKNIJ WIDGET</string>
+    <string name="open_widget">OTWÓRZ WIDGET</string>
+    <string name="about">O PROGRAMIE</string>
+    <string name="close_application">ZAMKNIJ APLIKACJE</string>
+    <string name="file_explorer">PRZEGLĄDARKA PLIKÓW</string>
+    <string name="previous">POPRZEDNIE</string>
+    <string name="close">ZAMKNIJ</string>
+    <string name="application_list">LISTA APLIKACJI</string>
+    <string name="load_apps">ładowanie zainstalowanych aplikacji</string>
+    <string name="rotate_animation_on">ANIMACJA OBROTU WŁĄCZONE</string>
+    <string name="rotate_animation_off">ANIMACJA OBROTU WYŁĄCZONE</string>
+</resources>
