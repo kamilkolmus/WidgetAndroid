@@ -33,70 +33,33 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-public class AdapterDragDropList extends DragItemAdapter<Pair<Long, String>, AdapterDragDropList.ViewHolder> implements DialogListApps_Adapter.dialogListAPPCallbacks{
+public class AdapterDragDropList extends DragItemAdapter<Pair<Long, String>, AdapterDragDropList.ViewHolder> {
 
     private int mLayoutId;
     private int mGrabHandleId;
     Context context;
-    MyFileManager myFileManagerAdapter;
+    MyFileReader myFileReaderAdapter;
     PackageManager manager;
     ArrayList<Pair<Long, String>> mItemArray;
 
-
-    DialogListApps_Adapter dialogListAppsAdapter;
-
-    @Override
-    public void dialogListAppCallbacks(String packedName, int position) {
-        myFileManagerAdapter.setElement(position,packedName);
-        mItemArray.set(position,new Pair<>(Long.valueOf(new Random().nextInt(99999999) + 100), packedName));
-        Log.i("kk",packedName);
-        loaderListCaunter=0;
-        setItemList(mItemArray);
-        notifyDataSetChanged();
-        adapterCallbacks.restartWidget();
-    }
-
-    private itemAdapterCallBacks adapterCallbacks;
-
-    interface itemAdapterCallBacks {
-        void restartWidget();
-    }
-
-    public void setCallbacks(itemAdapterCallBacks callbacks) {
-        adapterCallbacks = callbacks;
-    }
-
-    public AdapterDragDropList(Context context, int layoutId, int grabHandleId, boolean dragOnLongPress) {
+    public AdapterDragDropList(Context context, int layoutId, int grabHandleId, boolean dragOnLongPress,MyFileReader myFileReaderAdapter) {
         super(dragOnLongPress);
 
 
         mLayoutId = layoutId;
         mGrabHandleId = grabHandleId;
         setHasStableIds(true);
-        myFileManagerAdapter = new MyFileManager(new File(MainActivity.fileFULL));
-        myFileManagerAdapter =new MyFileManager(new File(MainActivity.fileFULL));
-        if(myFileManagerAdapter.getListSize()!=MainActivity.widgetIconsLimit){
-            if(myFileManagerAdapter.getListSize()<MainActivity.widgetIconsLimit){
-                myFileManagerAdapter.fillList(MainActivity.EmptyLine,MainActivity.widgetIconsLimit);
-            }
-            else{
-                while(myFileManagerAdapter.getListSize()>MainActivity.widgetIconsLimit){
-                    myFileManagerAdapter.removeLine(myFileManagerAdapter.getListSize()-1);
-                }
-            }
-
-        }
+        this.myFileReaderAdapter = myFileReaderAdapter;
         this.context = context;
         manager = context.getPackageManager();
         mItemArray = new ArrayList<>();
-        for (int i = 0; i < myFileManagerAdapter.getListSize(); i++) {
-            mItemArray.add(new Pair<>(Long.valueOf(i), myFileManagerAdapter.getElement(i)));
+        for (int i = 0; i < myFileReaderAdapter.getListSize(); i++) {
+            mItemArray.add(new Pair<>(Long.valueOf(i), myFileReaderAdapter.getElement(i)));
         }
 
         setItemList(mItemArray);
 
-        dialogListAppsAdapter = new DialogListApps_Adapter(context);
-        dialogListAppsAdapter.setCallbacks(this);
+
     }
 
     @Override
@@ -112,23 +75,20 @@ public class AdapterDragDropList extends DragItemAdapter<Pair<Long, String>, Ada
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         super.onBindViewHolder(holder, position);
 
-        if (loaderListCaunter < MainActivity.widgetIconsLimit) {
+        if (loaderListCaunter <myFileReaderAdapter.getListSize()) {
             loaderListCaunter++;
             try {
-                holder.mText.setText(manager.getPackageInfo(myFileManagerAdapter.getElement(position), 0).applicationInfo.loadLabel(manager).toString());
-                holder.mButton.setText("REMOVE");
+                holder.mText.setText(manager.getPackageInfo(myFileReaderAdapter.getElement(position), 0).applicationInfo.loadLabel(manager).toString());
             } catch (PackageManager.NameNotFoundException e) {
                 holder.mText.setText("EMPTY");
-                holder.mButton.setText("ADD");
             } catch (NullPointerException e) {
                 holder.mText.setText("EMPTY");
-                holder.mButton.setText("ADD");
             }
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        holder.mImageView.setImageDrawable(manager.getActivityIcon(manager.getLaunchIntentForPackage(myFileManagerAdapter.getElement(position))));
+                        holder.mImageView.setImageDrawable(manager.getActivityIcon(manager.getLaunchIntentForPackage(myFileReaderAdapter.getElement(position))));
                     } catch (PackageManager.NameNotFoundException e) {
                         holder.mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.mono_point));
                     } catch (NullPointerException e) {
@@ -137,38 +97,6 @@ public class AdapterDragDropList extends DragItemAdapter<Pair<Long, String>, Ada
                 }
             });
         }
-        holder.mButton.setOnClickListener(new View.OnClickListener()
-                                          {
-                                              @Override
-                                              public void onClick(View v) {
-
-                                                  if(myFileManagerAdapter.getElement(position).equals(MainActivity.EmptyLine)){
-                                                      Log.i("add","addd");
-                                                      dialogListAppsAdapter.setListTXTAdapterPosition(position);
-                                                      dialogListAppsAdapter.getWindow().getAttributes().windowAnimations = R.style.DialogAnimationUpDown;
-                                                      dialogListAppsAdapter.show();
-                                                  }else {
-                                                      myFileManagerAdapter.swapElement(mItemArray.get(position).second, "");
-                                                      mItemArray.set(position, new Pair<>(Long.valueOf(new Random().nextInt(99999999) + 100), MainActivity.EmptyLine));
-                                                         setItemList(mItemArray);
-                                                      myFileManagerAdapter.confirmChanges();
-                                                      adapterCallbacks.restartWidget();
-                                                  //    notifyDataSetChanged();
-                                                      loaderListCaunter = 0;
-                                                  }
-                                              }
-                                          }
-        );
-        if(position==MainActivity.widgetIconsLimit-1){
-            myFileManagerAdapter.clearList();
-        for (int i = 0; i <MainActivity.widgetIconsLimit; i++)
-        {
-            myFileManagerAdapter.addToList(mItemList.get(i).second);
-        }
-            myFileManagerAdapter.confirmChanges();
-            Log.i("confirmChanges", "confirmChanges" + position);
-        }
-
         Log.i("onBindViewHolder", "onBindViewHolder" + position);
     }
 
@@ -181,14 +109,12 @@ public class AdapterDragDropList extends DragItemAdapter<Pair<Long, String>, Ada
     public class ViewHolder extends DragItemAdapter<Pair<Long, String>, AdapterDragDropList.ViewHolder>.ViewHolder {
         public TextView mText;
         public ImageView mImageView;
-        public Button mButton;
 
         public ViewHolder(final View itemView) {
 
             super(itemView, mGrabHandleId);
             mText = (TextView) itemView.findViewById(R.id.text);
             mImageView = (ImageView) itemView.findViewById(R.id.image);
-            mButton = (Button) itemView.findViewById(R.id.button);
 
         }
     }

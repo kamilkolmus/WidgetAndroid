@@ -31,15 +31,15 @@ import java.util.List;
  * Created by Kamil on 2016-08-13.
  */
 public class FragmentSettings extends Fragment implements View.OnTouchListener{
-    private SeekBar sb_size, sb_radius,sb_icon, sb_scale_y,sb_alpha,sb_rotate_freq;
-    private TextView tv_size, tv_radius,tv_icon, tv_scale_y,tv_alpha,tv_rotate_freq;
+    private SeekBar sb_size, sb_radius,sb_icon,sb_alpha,sb_rotate_freq;
+    private TextView tv_size, tv_radius,tv_icon,tv_alpha,tv_rotate_freq;
     SharedPreferences sheredpreferences;
     SharedPreferences.Editor editor;
-    Spinner spinnerColor,spinnerLimit;
+    Spinner spinnerColor;
     boolean spinnerFirstSelectio = false;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_settings_2,container,false);
+        View v = inflater.inflate(R.layout.fragment_settings,container,false);
 
         MobileAds.initialize(getContext(), "ca-app-pub-3940256099942544~3347511713");
         AdView mAdView = (AdView) v.findViewById(R.id.adView);
@@ -76,35 +76,30 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
         sb_size = (SeekBar) v.findViewById(R.id.sb_widget_size);
         sb_radius = (SeekBar) v.findViewById(R.id.sb_radius);
         sb_icon = (SeekBar) v.findViewById(R.id.sb_icon_size);
-        sb_scale_y = (SeekBar) v.findViewById(R.id.sb_scale_x);
         sb_alpha=(SeekBar)v.findViewById(R.id.sb_alpha);
         sb_rotate_freq=(SeekBar)v.findViewById(R.id.sb_rotate_freq);
 
         tv_size = (TextView) v.findViewById(R.id.tv_widget_size);
         tv_radius = (TextView) v.findViewById(R.id.tv_radius);
         tv_icon= (TextView) v.findViewById(R.id.tv_icon_size);
-        tv_scale_y = (TextView) v.findViewById(R.id.tv_scale_x);
         tv_alpha=(TextView) v.findViewById(R.id.tv_alpha);
         tv_rotate_freq=(TextView)v.findViewById(R.id.tv_rotate_freq);
 
         sb_size.setMax( (maxWidgetSize - minWidgetSize) / stepWidgetSize );
         sb_radius.setMax((maxRadius - minRadius) / stepRadius);
         sb_icon.setMax((maxIconSize - minIconSize) / stepIconSize);
-        sb_scale_y.setMax((int)((maxScaleY - minScaleY) / stepScaleY));
         sb_alpha.setMax((int)((maxAlpha - minAlpha) / stepAlpha));
         sb_rotate_freq.setMax((int)((maxRotateFreq - minRotateFreq) / stepRotateFreq));
 
         sb_size.setProgress(sheredpreferences.getInt("widgetSize", MySettings.widgetSize)-minWidgetSize);
         sb_icon.setProgress(sheredpreferences.getInt("iconSize", MySettings.iconSize)-minIconSize);
         sb_radius.setProgress(sheredpreferences.getInt("radius", MySettings.radius)-minRadius);
-        sb_scale_y.setProgress((int)  ((sheredpreferences.getFloat("scaleY",(float) MySettings.scaleY) -minScaleY+stepScaleY)* 1/stepScaleY));
         sb_alpha.setProgress(100-sheredpreferences.getInt("alpha", MySettings.alpha));
         sb_rotate_freq.setProgress(sheredpreferences.getInt("rotateFreq", MySettings.randomAnimFreq));
 
         tv_size.setText(""+sheredpreferences.getInt("widgetSize", MySettings.widgetSize));
         tv_icon.setText(""+sheredpreferences.getInt("iconSize", MySettings.iconSize));
         tv_radius.setText(""+sheredpreferences.getInt("radius", MySettings.radius));
-        tv_scale_y.setText(""+(int)(sheredpreferences.getFloat("scaleY",(float) MySettings.scaleY)*100)+"%");
         tv_alpha.setText(""+(100-sheredpreferences.getInt("alpha", MySettings.alpha))+"%");
         tv_rotate_freq.setText(""+sheredpreferences.getInt("rotateFreq", MySettings.randomAnimFreq)+"s");
       //  tv_scale_y.setOnTouchListener(this);
@@ -178,29 +173,6 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
             }
         });
 
-        sb_scale_y.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            double progress = 0;
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
-                progress = round(minScaleY + (progressValue * stepScaleY),2);
-                tv_scale_y.setText(""+(int)(progress*100)+"%");
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                tv_scale_y.setText(""+(int)(progress*100)+"%");
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-                tv_scale_y.setText(""+(int)(progress*100)+"%");
-                editor.putFloat("scaleY",(float) progress);
-                editor.apply();
-                widgetRestrart();
-            }
-        });
 
         sb_alpha.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progress = 0;
@@ -408,40 +380,6 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
             }
         });
 
-        spinnerLimit = (Spinner) v.findViewById(R.id.spinner_widget_limit);
-        List<String> limit = new ArrayList<String>();
-        limit.add("6");
-        limit.add("8");
-        ArrayAdapter<String> limitAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, limit);
-        limitAdapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
-        spinnerLimit.setAdapter(limitAdapter);
-        spinnerFirstSelectio=false;
-        if(sheredpreferences.getInt("widgetNumber", MySettings.widgetLimit)==6){
-            spinnerLimit.setSelection(0);
-        }else{
-            spinnerLimit.setSelection(1);
-        }
-        spinnerLimit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(spinnerFirstSelectio){
-                    if(position==0){
-                        editor.putInt("widgetNumber",6);
-                        MainActivity.widgetIconsLimit=6;
-                    }else{
-                        editor.putInt("widgetNumber",8);
-                        MainActivity.widgetIconsLimit=8;
-                    }
-
-                    editor.apply();
-                    widgetRestrart();
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
 
 
@@ -455,6 +393,7 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
         categories.add("WHITE");
         categories.add("DARK");
         categories.add("PURPLE");
+        categories.add("RED");
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, categories);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_list_item_1);

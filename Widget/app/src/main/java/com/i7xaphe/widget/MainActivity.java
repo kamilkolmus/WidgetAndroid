@@ -49,8 +49,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SharedPreferences.Editor editor;
     public static String sharePref = "com.i7xaphe.widget";
     public static String fileFULL = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "widget" + File.separator + "file.txt";
-    public static String EmptyLine = "Empty";
-    public static int widgetIconsLimit;
     static List<PackageInfo> packageInfos;
     static List<Drawable> packageIcon;
     ProgressDialog dialog;
@@ -163,9 +161,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 navigationView.setNavigationItemSelectedListener(this);
 
-                widgetIconsLimit = sheredpreferences.getInt("widgetNumber", MySettings.widgetLimit);
-
-
 
                 fragmentAppList = new FragmentAllApps();
                 fragmentSettings = new FragmentSettings();
@@ -253,8 +248,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(final MenuItem item) {
         globalId = item.getItemId();
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
@@ -308,31 +301,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     new Handler().post(new Runnable() {
                         @Override
                         public void run() {
-                            if (sheredpreferences.getInt("widgetNumber", MySettings.widgetLimit) == 6) {
-                                if (!stopService(new Intent(getBaseContext(), Widget6.class))) {
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            startService(new Intent(getBaseContext(), Widget6.class));
-                                        }
-                                    }, 300);
-                                    item.setTitle(R.string.close_widget);
-                                } else {
-                                    item.setTitle(R.string.open_widget);
-                                }
+
+                            if (!stopService(new Intent(getBaseContext(), Widget.class))) {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startService(new Intent(getBaseContext(), Widget.class));
+                                    }
+                                }, 300);
+                                item.setTitle(R.string.close_widget);
                             } else {
-                                if (!stopService(new Intent(getBaseContext(), Widget8.class))) {
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            startService(new Intent(getBaseContext(), Widget8.class));
-                                        }
-                                    }, 300);
-                                    item.setTitle(R.string.close_widget);
-                                } else {
-                                    item.setTitle(R.string.open_widget);
-                                }
+                                item.setTitle(R.string.open_widget);
                             }
+
 
                         }
                     });
@@ -356,18 +337,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 return true;
     }
-
-
-
     void startWidget() {
 
-                stopService(new Intent(getBaseContext(), Widget6.class));
-                stopService(new Intent(getBaseContext(), Widget8.class));
-                if (sheredpreferences.getInt("widgetNumber", MySettings.widgetLimit) == 6) {
-                    startService(new Intent(getBaseContext(), Widget6.class));
-                } else {
-                    startService(new Intent(getBaseContext(), Widget8.class));
-                }
+        stopService(new Intent(getBaseContext(), Widget.class));
+        startService(new Intent(getBaseContext(), Widget.class));
+
     }
     @Override
     public void onFileSelect(String fileDir) {
@@ -428,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Drawable drawable;
                         if (manager.getActivityIcon(manager.getLaunchIntentForPackage(packageInfos.get(i).packageName)) == null) {
                         }else{
-                            //         packageIcon.add(manager.getActivityIcon(manager.getLaunchIntentForPackage(packageInfos.get(i).packageName)));
+                            //         packageIcon.add(packageManager.getActivityIcon(packageManager.getLaunchIntentForPackage(packageInfos.get(i).packageName)));
                         }
                     } catch (NullPointerException e) {
                         packageInfos.remove(i);

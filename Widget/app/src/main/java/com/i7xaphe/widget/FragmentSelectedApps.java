@@ -22,7 +22,7 @@ import java.io.File;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentSelectedApps extends Fragment implements AdapterView.OnItemClickListener,AdapterDragDropList.itemAdapterCallBacks{
+public class FragmentSelectedApps extends Fragment implements AdapterView.OnItemClickListener{
     DragListView mDragListView;
 
     @Override
@@ -44,8 +44,8 @@ public class FragmentSelectedApps extends Fragment implements AdapterView.OnItem
     public void onStart() {
 
         mDragListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        final AdapterDragDropList listAdapter = new AdapterDragDropList(getContext(),R.layout.item_list_selected, R.id.layout, false);
-        listAdapter.setCallbacks(this);
+        final MyFileReader myFileReaderAdapter = new MyFileReader(new File(MainActivity.fileFULL));
+        final AdapterDragDropList listAdapter = new AdapterDragDropList(getContext(),R.layout.item_list_selected, R.id.layout, false,myFileReaderAdapter);
         mDragListView.setAdapter(listAdapter, true);
         mDragListView.setCanDragHorizontally(false);
         mDragListView.setDragListListener(new DragListView.DragListListener() {
@@ -60,7 +60,14 @@ public class FragmentSelectedApps extends Fragment implements AdapterView.OnItem
 
             @Override
             public void onItemDragEnded(int fromPosition, int toPosition) {
+
+
                 if (fromPosition != toPosition) {
+                    String packed1=myFileReaderAdapter.getElement(fromPosition);
+                    String packed2=myFileReaderAdapter.getElement(toPosition);
+                    myFileReaderAdapter.setElement(fromPosition,packed2);
+                    myFileReaderAdapter.setElement(toPosition,packed1);
+                    myFileReaderAdapter.confirmChanges();
                     listAdapter.notifyDataSetChanged();
                     widgetRestrart();
                 }
@@ -80,11 +87,5 @@ public class FragmentSelectedApps extends Fragment implements AdapterView.OnItem
         ((MainActivity) getActivity()).startWidget();
 
     }
-
-    @Override
-    public void restartWidget() {
-        widgetRestrart();
-    }
-
 
 }

@@ -2,11 +2,12 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     >
 
-        <alpha
-            android:fromAlpha="1.0"
-            android:toAlpha="-0.05"
-            android:repeatCount="0"
-            android:repeatMode="reverse" />
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="-0.9"
+        android:duration="150"
+        android:repeatCount="1"
+        android:repeatMode="reverse" />
 
 
     <rotate
@@ -14,7 +15,7 @@
         android:toDegrees="0"
         android:pivotX="50%"
         android:pivotY="50%"
-        android:duration="400"
+        android:duration="300"
         android:startOffset="0"
         android:repeatCount="0"
         android:repeatMode="restart" />

@@ -43,7 +43,7 @@ public class FragmentAllApps extends Fragment {
     Animation anim_button;
     int longClickPosition;
     PackageManager manager;
-    MyFileManager listMemoryAdapter;
+    MyFileReader listMemoryAdapter;
     String filter = "";
 
     @Override
@@ -58,23 +58,23 @@ public class FragmentAllApps extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        listMemoryAdapter = new MyFileManager(file);
-        if (listMemoryAdapter.getListSize() != MainActivity.widgetIconsLimit) {
-            if (listMemoryAdapter.getListSize() < MainActivity.widgetIconsLimit) {
-                listMemoryAdapter.fillList(MainActivity.EmptyLine, MainActivity.widgetIconsLimit);
-            } else {
-                while (listMemoryAdapter.getListSize() > MainActivity.widgetIconsLimit) {
-                    listMemoryAdapter.removeLine(listMemoryAdapter.getListSize() - 1);
-                }
-            }
-
-        }
+        listMemoryAdapter = new MyFileReader(file);
+//        if (listMemoryAdapter.getListSize() != MainActivity.widgetIconsLimit) {
+//            if (listMemoryAdapter.getListSize() < MainActivity.widgetIconsLimit) {
+//                listMemoryAdapter.fillList(MainActivity.EmptyLine, MainActivity.widgetIconsLimit);
+//            } else {
+//                while (listMemoryAdapter.getListSize() > MainActivity.widgetIconsLimit) {
+//                    listMemoryAdapter.removeLine(listMemoryAdapter.getListSize() - 1);
+//                }
+//            }
+//
+//        }
         manager = getContext().getPackageManager();
 
         recyclerview = (RecyclerView) v.findViewById(R.id.recylerview);
         recyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)); // zmieni!1
 
-        anim_button = AnimationUtils.loadAnimation(getContext(), R.anim.button_press);
+        anim_button = AnimationUtils.loadAnimation(getContext(), R.anim.icon_click_anim);
         Log.i("List Fragment", "on Create VIEW");
         setNewAdapter(filter);
         new Handler().postDelayed(new Runnable() {
@@ -194,19 +194,11 @@ public class FragmentAllApps extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (holder.checkBox.isChecked()) {
-                        if (listMemoryAdapter.getListSize() >= MainActivity.widgetIconsLimit && !listMemoryAdapter.contains(MainActivity.EmptyLine)) {
-                            holder.checkBox.setChecked(false);
-                            Toast.makeText(getContext(), "You can choose max " + MainActivity.widgetIconsLimit + " Applications", Toast.LENGTH_SHORT).show();
-                        } else {
-                            listMemoryAdapter.swapElement(MainActivity.EmptyLine, packageInfos.get(position).packageName);
-                            ((MainActivity) getActivity()).startWidget();
-                        }
+                        listMemoryAdapter.addToList(packageInfos.get(position).packageName);
                     } else {
-
-                        listMemoryAdapter.swapElement(packageInfos.get(position).packageName, MainActivity.EmptyLine);
-                        ((MainActivity) getActivity()).startWidget();
-
+                        listMemoryAdapter.removeLine(packageInfos.get(position).packageName);
                     }
+                    ((MainActivity) getActivity()).startWidget();
                     listMemoryAdapter.confirmChanges();
                 }
             });

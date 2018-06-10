@@ -34,4 +34,7 @@ dependencies {
     compile 'com.android.support:percent:26.1.0'
     compile 'com.google.firebase:firebase-ads:9.6.1'
 
+    compile group: 'com.android.support.constraint', name: 'constraint-layout-solver', version: '1.1.0'
+
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
 }

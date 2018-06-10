@@ -6,11 +6,11 @@ import java.util.List;
 /**
  * Created by Kamil on 2016-08-14.
  */
-public class MyFileManager {
+public class MyFileReader {
     private List<String> list;
     private File file;
 
-    public MyFileManager(File file) {
+    public MyFileReader(File file) {
         this.file = file;
         list = MyFileClass.LoadFile(file);
     }
@@ -41,10 +41,6 @@ public class MyFileManager {
          list.remove(position);
     }
 
-    public void removeLines(String str) {
-        while (removeLine(str)) ;
-
-    }
 
     public boolean swapElement(String oldElement, String newElement) {
         if (list.contains(oldElement)) {

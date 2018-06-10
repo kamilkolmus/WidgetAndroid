@@ -169,49 +169,6 @@
                 android:thumbTintMode="multiply" />
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="@dimen/ll_margin"
-                android:layout_marginRight="@dimen/ll_margin"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="@string/scale_y"
-                    android:textColor="@android:color/secondary_text_light"
-                    android:textSize="16dp" />
-
-                <TextView
-                    android:id="@+id/tv_scale_x"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-
-                    android:text="10"
-                    android:textColor="@android:color/secondary_text_light"
-                    android:textSize="16dp" />
-            </LinearLayout>
-
-            <SeekBar
-                android:id="@+id/sb_scale_x"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginEnd="@dimen/seekbar_margin"
-                android:layout_marginStart="@dimen/seekbar_margin"
-                android:alpha="@android:integer/config_longAnimTime"
-                android:maxHeight="10dp"
-                android:progressDrawable="@drawable/seekbar"
-                android:thumbTintMode="multiply" />
-
-
-            <LinearLayout
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -385,35 +342,6 @@
                 android:textColor="@android:color/secondary_text_light"
                 android:textSize="16dp"
                 android:checked="false" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/switch_margin"
-                android:layout_marginRight="@dimen/switch_margin"
-                android:layout_marginTop="10dp"
-                android:gravity="fill"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center_vertical"
-                    android:text="@string/widget_limit"
-                    android:textColor="@android:color/secondary_text_light"
-                    android:textSize="16dp"
-                    />
-                <Spinner
-
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/spinner_widget_limit"
-                    android:layout_gravity="center_horizontal" />
-
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

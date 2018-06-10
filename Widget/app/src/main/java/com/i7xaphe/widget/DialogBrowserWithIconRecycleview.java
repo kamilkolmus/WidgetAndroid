@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -260,11 +261,17 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
                                 @Override
                                 public void run() {
                                     File imgFile = new File(pathFull + File.separator + list.get(position));
-                                    final Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                    myBitmap.compress(Bitmap.CompressFormat.PNG,1,stream);
+                                    byte[] byteArray = stream.toByteArray();
+                                    final Bitmap compressedBitmap = BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
+
+
                                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            holder.img.setImageBitmap(Bitmap.createScaledBitmap(myBitmap, 64, 64, false));
+                                            holder.img.setImageBitmap(Bitmap.createScaledBitmap(compressedBitmap, 64, 64, false));
                                             Log.d("UI thread", "I am the UI thread");
                                         }
                                     });

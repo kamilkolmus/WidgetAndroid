@@ -12,11 +12,7 @@ public class MyReceiver extends BroadcastReceiver {
         SharedPreferences sheredpreferences;
         sheredpreferences = context.getSharedPreferences(MainActivity.sharePref, Context.MODE_PRIVATE);
         if (sheredpreferences.getBoolean("startUp", MySettings.startUp)) {
-            if (sheredpreferences.getInt("widgetNumber", MySettings.widgetLimit) == 6) {
-                context.startService(new Intent(context, Widget6.class));
-            } else if (sheredpreferences.getInt("widgetNumber", MySettings.widgetLimit) == 8) {
-                context.startService(new Intent(context, Widget8.class));
-            }
+            context.startService(new Intent(context, Widget.class));
         }
     }
 
