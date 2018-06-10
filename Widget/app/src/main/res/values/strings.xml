@@ -44,6 +44,9 @@
     <string name="application_list">APPLICATION LIST</string>
     <string name="rotate_animation_on">ROTATE ANIMATION ON</string>
     <string name="rotate_animation_off">ROTATE ANIMATION ON</string>
+    <string name="rotate_circle_anim_on">CIRCLE ANIMATION ON</string>
+    <string name="rotate_circle_anim_off">CIRCLE ANIMATION OFF</string>
+    <string name="step">STEP</string>
 
 
 </resources>

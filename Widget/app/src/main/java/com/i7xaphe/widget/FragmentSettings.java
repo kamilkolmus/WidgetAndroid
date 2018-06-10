@@ -31,8 +31,8 @@ import java.util.List;
  * Created by Kamil on 2016-08-13.
  */
 public class FragmentSettings extends Fragment implements View.OnTouchListener{
-    private SeekBar sb_size, sb_radius,sb_icon,sb_alpha,sb_rotate_freq;
-    private TextView tv_size, tv_radius,tv_icon,tv_alpha,tv_rotate_freq;
+    private SeekBar sb_size, sb_radius,sb_icon,sb_alpha,sb_rotate_freq, sb_circle_freq,sb_circle_step;
+    private TextView tv_size, tv_radius,tv_icon,tv_alpha,tv_rotate_freq, tv_circle_freq,tv_circle_step;
     SharedPreferences sheredpreferences;
     SharedPreferences.Editor editor;
     Spinner spinnerColor;
@@ -61,9 +61,6 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
         int maxRadius = 100;
         final int minRadius = 20;
 
-        final double stepScaleY = 0.01;
-        double maxScaleY = 2.0;
-        final double minScaleY = 0.5;
 
         final int stepAlpha = 1;
         double maxAlpha = 100;
@@ -73,35 +70,55 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
         double maxRotateFreq = 60;
         final int minRotateFreq = 1;
 
+        final int stepCircleAnimFreq = 25;
+        int maxCircleAnimFreq = 1000;
+        final int minCircleAnimFreq = 50;
+
+        final double stepCircleAnimStep = 0.1;
+        int maxCircleAnimStep = 5;
+        final double minCircleAnimStep = 0.1;
+
         sb_size = (SeekBar) v.findViewById(R.id.sb_widget_size);
         sb_radius = (SeekBar) v.findViewById(R.id.sb_radius);
         sb_icon = (SeekBar) v.findViewById(R.id.sb_icon_size);
         sb_alpha=(SeekBar)v.findViewById(R.id.sb_alpha);
         sb_rotate_freq=(SeekBar)v.findViewById(R.id.sb_rotate_freq);
+        sb_circle_freq =(SeekBar)v.findViewById(R.id.sb_circle_freq);
+        sb_circle_step=(SeekBar)v.findViewById(R.id.sb_circle_step);
 
         tv_size = (TextView) v.findViewById(R.id.tv_widget_size);
         tv_radius = (TextView) v.findViewById(R.id.tv_radius);
         tv_icon= (TextView) v.findViewById(R.id.tv_icon_size);
         tv_alpha=(TextView) v.findViewById(R.id.tv_alpha);
         tv_rotate_freq=(TextView)v.findViewById(R.id.tv_rotate_freq);
+        tv_circle_freq =(TextView)v.findViewById(R.id.tv_circle_freq);
+        tv_circle_step =(TextView)v.findViewById(R.id.tv_circle_step);
 
         sb_size.setMax( (maxWidgetSize - minWidgetSize) / stepWidgetSize );
         sb_radius.setMax((maxRadius - minRadius) / stepRadius);
         sb_icon.setMax((maxIconSize - minIconSize) / stepIconSize);
         sb_alpha.setMax((int)((maxAlpha - minAlpha) / stepAlpha));
         sb_rotate_freq.setMax((int)((maxRotateFreq - minRotateFreq) / stepRotateFreq));
+        sb_circle_freq.setMax((maxCircleAnimFreq - minCircleAnimFreq) / stepCircleAnimFreq);
+        sb_circle_step.setMax((int)((maxCircleAnimStep - minCircleAnimStep) / stepCircleAnimStep));
+
 
         sb_size.setProgress(sheredpreferences.getInt("widgetSize", MySettings.widgetSize)-minWidgetSize);
         sb_icon.setProgress(sheredpreferences.getInt("iconSize", MySettings.iconSize)-minIconSize);
         sb_radius.setProgress(sheredpreferences.getInt("radius", MySettings.radius)-minRadius);
         sb_alpha.setProgress(100-sheredpreferences.getInt("alpha", MySettings.alpha));
         sb_rotate_freq.setProgress(sheredpreferences.getInt("rotateFreq", MySettings.randomAnimFreq));
+        sb_circle_freq.setProgress((sheredpreferences.getInt("circleAnimFreq", MySettings.circleAnimFreq)/stepCircleAnimFreq)-1);
+        sb_circle_step.setProgress((int) ((sheredpreferences.getFloat("circleAnimStep", MySettings.circleAnimStep)/stepCircleAnimStep)-1));
+
 
         tv_size.setText(""+sheredpreferences.getInt("widgetSize", MySettings.widgetSize));
         tv_icon.setText(""+sheredpreferences.getInt("iconSize", MySettings.iconSize));
         tv_radius.setText(""+sheredpreferences.getInt("radius", MySettings.radius));
         tv_alpha.setText(""+(100-sheredpreferences.getInt("alpha", MySettings.alpha))+"%");
         tv_rotate_freq.setText(""+sheredpreferences.getInt("rotateFreq", MySettings.randomAnimFreq)+"s");
+        tv_circle_freq.setText(""+sheredpreferences.getInt("circleAnimFreq", MySettings.circleAnimFreq)+"ms");
+        tv_circle_step.setText(""+round((double)sheredpreferences.getFloat("circleAnimStep", MySettings.circleAnimStep),1)+"°");
       //  tv_scale_y.setOnTouchListener(this);
 
         sb_size.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -198,10 +215,54 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
             }
         });
 
+        sb_circle_freq.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progress = 0;
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                progress = minCircleAnimFreq + (progressValue * stepCircleAnimFreq);
+                tv_circle_freq.setText(""+(int)(progress)+"ms");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                tv_circle_freq.setText(""+(int)(progress)+"ms");
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tv_circle_freq.setText(""+(int)(progress)+"ms");
+                editor.putInt("circleAnimFreq", progress);
+                editor.apply();
+                widgetRestrart();
+            }
+        });
+        sb_circle_step.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            double progress = 0;
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                progress = minCircleAnimStep + (progressValue * stepCircleAnimStep);
+                tv_circle_step.setText(""+round(progress,1)+"°");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                tv_circle_step.setText(""+round(progress,1)+"°");
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tv_circle_step.setText(""+round(progress,1)+"°");
+                editor.putFloat("circleAnimStep", (float) progress);
+                editor.apply();
+                widgetRestrart();
+            }
+        });
+
         final Switch switchIconShowHide = (Switch) v.findViewById(R.id.sw_hide_icons);
         final Switch switchBoundaries = (Switch) v.findViewById(R.id.sw_boundaries);
         final Switch switchWidgetForeground = (Switch) v.findViewById(R.id.sw_foreground);
         final Switch switchRotateAnim= (Switch) v.findViewById(R.id.sw_rotate_animation);
+        final Switch switchCircleAnim= (Switch) v.findViewById(R.id.sw_circle_animation);
         final Switch switchRandomAnim= (Switch) v.findViewById(R.id.sw_random_animation);
         final Switch switchStartUp= (Switch) v.findViewById(R.id.sw_add_startApp);
 
@@ -210,6 +271,7 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
         switchBoundaries.setChecked(sheredpreferences.getBoolean("widgetBoundaries", MySettings.boundariesOn));
         switchWidgetForeground.setChecked(sheredpreferences.getBoolean("widgetForeground", MySettings.runForeground));
         switchRotateAnim.setChecked(sheredpreferences.getBoolean("rotateAnim", MySettings.randomAnim));
+        switchCircleAnim.setChecked(sheredpreferences.getBoolean("circleAnim", MySettings.circleAnim));
         switchRandomAnim.setChecked(sheredpreferences.getBoolean("randomAnim", MySettings.randomAnim));
         switchStartUp.setChecked(sheredpreferences.getBoolean("startUp", MySettings.startUp));
 
@@ -220,6 +282,14 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
         }else{
             ll_ratate_ferq.setVisibility(View.GONE);
         }
+
+        final LinearLayout ll_circle_anim= (LinearLayout) v.findViewById(R.id.ll_circle_anim_container);
+        if(switchCircleAnim.isChecked()){
+            ll_circle_anim.setVisibility(View.VISIBLE);
+        }else{
+            ll_circle_anim.setVisibility(View.GONE);
+        }
+
 
         switchIconShowHide.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -286,20 +356,30 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
                 if(isChecked){
                     switchRandomAnim.setText(R.string.rotate_random_anim_on);
                     ll_ratate_ferq.setVisibility(View.VISIBLE);
-//                    ll_ratate_ferq.setAlpha(0.0f);
-//                    ll_ratate_ferq.animate().translationY(0).alpha(1.0f).setDuration(800).setListener(null);
+
                 }else{
                     switchRandomAnim.setText(R.string.rotate_random_anim_off);
                     ll_ratate_ferq.setVisibility(View.GONE);
-//                    ll_ratate_ferq.animate().translationY(0).alpha(0.0f).setDuration(800)
-//                            .setListener(new AnimatorListenerAdapter() {
-//                                @Override
-//                                public void onAnimationEnd(Animator animation) {
-//                                    super.onAnimationEnd(animation);
-//                                   //     ll_ratate_ferq.setVisibility(View.GONE);
-//
-//                                }
-//                            });
+
+
+                }
+                editor.apply();
+                widgetRestrart();
+            }
+        });
+
+        switchCircleAnim.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
+                editor.putBoolean("circleAnim",isChecked);
+                if(isChecked){
+                    switchCircleAnim.setText(R.string.rotate_circle_anim_on);
+                    ll_circle_anim.setVisibility(View.VISIBLE);
+
+                }else{
+                    switchCircleAnim.setText(R.string.rotate_circle_anim_off);
+                    ll_circle_anim.setVisibility(View.GONE);
+
 
                 }
                 editor.apply();
@@ -348,6 +428,12 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
             switchRandomAnim.setText(R.string.rotate_random_anim_on);
         }else{
             switchRandomAnim.setText(R.string.rotate_random_anim_off);
+        }
+
+        if(sheredpreferences.getBoolean("circleAnim", MySettings.circleAnim)){
+            switchCircleAnim.setText(R.string.rotate_circle_anim_on);
+        }else{
+            switchCircleAnim.setText(R.string.rotate_circle_anim_off);
         }
 
         if(sheredpreferences.getBoolean("startUp", MySettings.startUp)){
@@ -479,4 +565,5 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
     public void restartSpinnerWidget() {
         spinnerColor.setSelection(sheredpreferences.getInt("widgetColor", MySettings.widgetColor));
     }
+
 }

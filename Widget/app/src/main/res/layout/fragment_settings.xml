@@ -317,6 +317,116 @@
                     />
             </LinearLayout>
             <Switch
+                android:id="@+id/sw_circle_animation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:layout_marginTop="20dp"
+                android:gravity="fill"
+                android:text="@string/rotate_circle_anim_on"
+                android:textColor="@android:color/secondary_text_light"
+                android:textSize="16dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ll_circle_anim_container"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="@dimen/switch_margin"
+                android:layout_marginRight="@dimen/switch_margin"
+                android:background="#3fffe600"
+                android:layout_marginBottom="-10dp"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:animateLayoutChanges="true"
+                    android:layout_marginLeft="60dp"
+                    android:paddingBottom="-10dp"
+                    android:layout_marginRight="60dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_weight="10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:text="@string/frequency"
+
+                        android:textColor="@android:color/secondary_text_light"
+                        android:textSize="16dp" />
+
+                    <TextView
+                        android:id="@+id/tv_circle_freq"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:text="10"
+                        android:textColor="@android:color/secondary_text_light"
+                        android:textSize="16dp" />
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/sb_circle_freq"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+
+                    android:layout_marginTop="0dp"
+                    android:maxHeight="10dp"
+                    android:progressDrawable="@drawable/seekbar"
+                    android:thumbTintMode="multiply"
+
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:animateLayoutChanges="true"
+                    android:layout_marginLeft="60dp"
+                    android:paddingBottom="-10dp"
+                    android:layout_marginRight="60dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_weight="10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:text="@string/step"
+
+                        android:textColor="@android:color/secondary_text_light"
+                        android:textSize="16dp" />
+
+                    <TextView
+                        android:id="@+id/tv_circle_step"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:text="10"
+                        android:textColor="@android:color/secondary_text_light"
+                        android:textSize="16dp" />
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/sb_circle_step"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+
+                    android:layout_marginTop="0dp"
+                    android:maxHeight="10dp"
+                    android:progressDrawable="@drawable/seekbar"
+                    android:thumbTintMode="multiply"
+
+                    />
+            </LinearLayout>
+            <Switch
                 android:visibility="gone"
                 android:id="@+id/sw_foreground"
                 android:layout_width="match_parent"
@@ -371,7 +481,6 @@
                     android:layout_gravity="center_horizontal" />
 
             </LinearLayout>
-
             <Button
                 android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
@@ -380,7 +489,6 @@
                 android:id="@+id/b_custom_widget"
                 android:layout_marginBottom="10dp"
                 android:layout_gravity="center_horizontal" />
-
         </LinearLayout>
     </ScrollView>
 

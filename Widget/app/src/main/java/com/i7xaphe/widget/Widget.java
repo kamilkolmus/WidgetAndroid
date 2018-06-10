@@ -40,6 +40,7 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
 
     WindowManager wm;
     RandomAnimAsyncTask randomAnimAsyncTask;
+    CircleAnimAsyncTask circleAnimAsyncTask;
     //fields that hold widget position
     double x;
     double y;
@@ -51,7 +52,6 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
     LayoutParams layoutParams;
     View widget;
     ArrayList<ImageView> imageButtonArrayList = new ArrayList<>();
-
     //
     SharedPreferences sheredpreferences;
     SharedPreferences.Editor editor;
@@ -206,7 +206,7 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
 
         int widgetSize = dpToPx(sheredpreferences.getInt("widgetSize", MySettings.widgetSize));
         int iconSize = dpToPx(sheredpreferences.getInt("iconSize", MySettings.iconSize));
-        int radius = dpToPx(sheredpreferences.getInt("radius", MySettings.radius));
+
 
         //WIEKOSC WIDGET
         if (isWidgetGif) {
@@ -231,7 +231,7 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
             (widget).getLayoutParams().width = widgetSize;
         }
 
-
+        int radius = dpToPx(sheredpreferences.getInt("radius", MySettings.radius));
         float nbPackedes = packedList.getListSize();
         float angle;
         try {
@@ -296,7 +296,6 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
 
             constraintSet.constrainCircle(imageButtonArrayList.get(finalI).getId(), widget.getId(), radius, angle * i);
 
-
             constraintSet.applyTo(constraintLayout);
 
         }
@@ -315,12 +314,18 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
 
         widget.setTag(ACTION_HIDE);
 
+
         if (sheredpreferences.getBoolean("randomAnim", MySettings.randomAnim)) {
             randomAnimAsyncTask = new RandomAnimAsyncTask();
-            randomAnimAsyncTask.execute();
+            randomAnimAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+        if (sheredpreferences.getBoolean("circleAnim", MySettings.circleAnim)) {
+            circleAnimAsyncTask= new CircleAnimAsyncTask();
+            circleAnimAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
     }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -333,6 +338,9 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
         wm.removeView(constraintLayout);
         if (randomAnimAsyncTask != null) {
             randomAnimAsyncTask.cancel(false);
+        }
+        if (circleAnimAsyncTask != null) {
+            circleAnimAsyncTask.cancel(false);
         }
         stopSelf();
     }
@@ -806,8 +814,11 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
             super.onPreExecute();
             random = new Random();
             random.setSeed(System.currentTimeMillis());
-            // set up values for required params
+
+        //    constraintSet= new ConstraintSet();
+
         }
+
 
         @Override
         protected void onProgressUpdate(Void... values) {
@@ -834,10 +845,69 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
         protected Void doInBackground(Void... arg0) {
             //make the web service call here
             int rotateFreq = sheredpreferences.getInt("rotateFreq", MySettings.randomAnimFreq);
+
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
             do {
                 try {
               //      Log.e("dsds", "sdddddddddddddd");
                     Thread.sleep(rotateFreq * 1000);
+                    publishProgress();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            } while (widget.isAttachedToWindow());
+            return null;
+        }
+    }
+    class CircleAnimAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        int radius;
+        float angle;
+        ConstraintSet constraintSet;
+        float step;
+        int stepCount;
+        int move;
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            float nbPackedes = packedList.getListSize();
+            try {
+                angle = 360 / (nbPackedes);
+            } catch (ArithmeticException e) {
+                angle = 0;
+            }
+            radius = dpToPx(sheredpreferences.getInt("radius", MySettings.radius));
+            constraintSet=new ConstraintSet();
+            step=sheredpreferences.getFloat("circleAnimStep", MySettings.circleAnimStep);
+            stepCount=0;
+            move=sheredpreferences.getInt("circleAnimFreq", MySettings.circleAnimFreq);
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            constraintSet.clone(constraintLayout);
+            for(int i=0;i<packedList.getListSize();i++){
+                constraintSet.constrainCircle(imageButtonArrayList.get(i).getId(), widget.getId(), radius, angle * i+step*stepCount);
+            }
+            stepCount++;
+            constraintSet.applyTo(constraintLayout);
+        }
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            //make the web service call here
+
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+            do {
+                try {
+                    Thread.sleep( move);
                     publishProgress();
                 } catch (InterruptedException e) {
                     e.printStackTrace();

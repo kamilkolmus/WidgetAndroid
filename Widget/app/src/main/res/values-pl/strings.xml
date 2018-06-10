@@ -21,6 +21,8 @@
     <string name="widget_boundaries_off">GRANICE WYŁĄCZONE</string>
     <string name="rotate_random_anim_on">LOSOWE ANIMACJE WŁĄCZONE</string>
     <string name="rotate_random_anim_off">LOSOWE ANIMACJE WYŁĄCZONE</string>
+    <string name="rotate_circle_anim_on">ANIMACJA OBROTU IKON WŁĄCZONA</string>
+    <string name="rotate_circle_anim_off">ANIMACJA OBROTU IKON WYŁĄCZONA</string>
     <string name="frequency">CZESTOTLIWOŚĆ</string>
     <string name="run_foreground">RUN FOREGROUND</string>
     <string name="add_widget_to_startup_on">URUCHOM WIDGET PODCZAS STARTU SYSTEMU WŁĄCZONE</string>
@@ -43,4 +45,5 @@
     <string name="load_apps">ładowanie zainstalowanych aplikacji</string>
     <string name="rotate_animation_on">ANIMACJA OBROTU WŁĄCZONE</string>
     <string name="rotate_animation_off">ANIMACJA OBROTU WYŁĄCZONE</string>
+    <string name="step">KORK</string>
 </resources>
