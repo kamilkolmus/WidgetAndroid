@@ -80,12 +80,12 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
         historyPath = new ArrayList<>();
         historyPosition = new ArrayList<>();
         pathFull = Environment.getExternalStorageDirectory().getPath();
-        Log.i("pathFull","path length" + pathFull.length());
+        Log.i("pathFull", "path length" + pathFull.length());
         tvPath = (TextView) findViewById(R.id.tv_path);
-        tvPath.setText("Root"+pathFull.substring(19));
+        tvPath.setText("Root" + pathFull.substring(19));
 
         recyclerView = (RecyclerView) findViewById(R.id.list);
-         linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayout.VERTICAL, false);
+        linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayout.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         setMyAdapter(pathFull, 0);
         recyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
@@ -111,7 +111,7 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
                 //        hide();
                 if (!historyPath.isEmpty()) {
                     pathFull = historyPath.get(historyPath.size() - 1);
-                    tvPath.setText("Root"+pathFull.substring(19));
+                    tvPath.setText("Root" + pathFull.substring(19));
                     setMyAdapter(historyPath.get(historyPath.size() - 1), historyPosition.get(historyPosition.size() - 1));
                     historyPath.remove(historyPath.size() - 1);
                     historyPosition.remove(historyPosition.size() - 1);
@@ -131,7 +131,7 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
             historyPath.add(pathFull);
             historyPosition.add(position);
             pathFull = pathFull + File.separator + filename;
-            tvPath.setText("Root"+pathFull.substring(19));
+            tvPath.setText("Root" + pathFull.substring(19));
             setMyAdapter(pathFull, 0);
         } else {
             dialogBroswerCallbacks.onFileSelect(pathFull + File.separator + filename);
@@ -168,12 +168,14 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
             img = (ImageView) itemView.findViewById(R.id.imageView1);
         }
     }
+
     public class CustomAdapter extends RecyclerView.Adapter<MyViewHolder> {
         List<String> list;
         int resource;
         Context context;
         View lastView;
         View v;
+
         public CustomAdapter(Context context, int resource, final List list) {
             this.resource = resource;
             this.list = list;
@@ -183,17 +185,17 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
 
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            v = LayoutInflater.from(parent.getContext()).inflate(resource,parent, false);
+            v = LayoutInflater.from(parent.getContext()).inflate(resource, parent, false);
 
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     final int itemPosition = recyclerView.getChildPosition(v);
-                    if (new File(pathFull + File.separator +list.get(itemPosition)).isDirectory()) {
+                    if (new File(pathFull + File.separator + list.get(itemPosition)).isDirectory()) {
                         historyPath.add(pathFull);
                         historyPosition.add(itemPosition);
                         pathFull = pathFull + File.separator + list.get(itemPosition);
-                        tvPath.setText("Root"+pathFull.substring(19));
+                        tvPath.setText("Root" + pathFull.substring(19));
                         Animation animation = AnimationUtils.loadAnimation(context, R.anim.button_press_fast_fast);
                         v.startAnimation(animation);
                         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -213,11 +215,11 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
                             }
                         });
                     } else {
-                        if(lastView!=null){
-                              lastView.setBackgroundColor(Color.TRANSPARENT);
+                        if (lastView != null) {
+                            lastView.setBackgroundColor(Color.TRANSPARENT);
                         }
-                        v.setBackgroundColor(new Color().argb(0x73,0xcf,0xcf,0xcf));
-                        lastView=v;
+                        v.setBackgroundColor(new Color().argb(0x73, 0xcf, 0xcf, 0xcf));
+                        lastView = v;
                         Animation animation = AnimationUtils.loadAnimation(context, R.anim.button_press_fast_fast);
                         v.startAnimation(animation);
                         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -250,23 +252,25 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
                 public void run() {
                     if (new File(pathFull + File.separator + list.get(position)).isDirectory()) {
                         holder.img.setImageResource(R.drawable.folderandroid);
-                    }  else if ((list.get(position)).endsWith(".bmp") || (list.get(position)).endsWith(".BMP")||
-                            (list.get(position)).endsWith(".png") || (list.get(position)).endsWith(".PNG")||
-                            (list.get(position)).endsWith(".gif") || (list.get(position)).endsWith(".GIF")||
+                    } else if ((list.get(position)).endsWith(".bmp") || (list.get(position)).endsWith(".BMP") ||
+                            (list.get(position)).endsWith(".png") || (list.get(position)).endsWith(".PNG") ||
+                            (list.get(position)).endsWith(".gif") || (list.get(position)).endsWith(".GIF") ||
                             (list.get(position)).endsWith(".jpg") || (list.get(position)).endsWith(".JPG")) {
-                        try {
 
-
-                            Thread thread = new Thread(new Runnable() {
-                                @Override
-                                public void run() {
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
                                     File imgFile = new File(pathFull + File.separator + list.get(position));
-                                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                                    BitmapFactory.Options options = new BitmapFactory.Options();
+                                    options.inJustDecodeBounds = false;
+                                    options.inPreferredConfig = Bitmap.Config.ARGB_4444;
+                                    options.inDither = true;
+                                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
                                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                    myBitmap.compress(Bitmap.CompressFormat.PNG,1,stream);
+                                    myBitmap.compress(Bitmap.CompressFormat.PNG, 10, stream);
                                     byte[] byteArray = stream.toByteArray();
-                                    final Bitmap compressedBitmap = BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);
-
+                                    final Bitmap compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
 
                                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                                         @Override
@@ -275,13 +279,14 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
                                             Log.d("UI thread", "I am the UI thread");
                                         }
                                     });
-
+                                } catch (OutOfMemoryError e) {
+                                    e.printStackTrace();
                                 }
-                            });
-                            thread.start();
-                        } catch (OutOfMemoryError e) {
 
-                        }
+                            }
+                        });
+                        thread.start();
+
                     } else {
                         holder.img.setImageResource(R.drawable.otherfile);
                     }
@@ -333,7 +338,7 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
                         }
                     });
                 }
-            },100);
+            }, 100);
 
         }
 

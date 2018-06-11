@@ -122,7 +122,7 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
         }
 
         layoutParams.gravity = Gravity.CENTER;
-        layoutParams.windowAnimations = android.R.style.Animation_Activity;
+        layoutParams.windowAnimations = android.R.style.Animation_Toast;
 
         //ustawienie flagi braku animacji podczas zmiany wielkosci okna
         int currentFlags = 0;
@@ -172,8 +172,18 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
                 File imgFile = new File(sheredpreferences.getString("pngFile", ""));
                 if (imgFile.exists()) {
                     if (!isWidgetGif) {
-                        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                        ((ImageView) widget).setImageBitmap(myBitmap);
+                        try {
+                            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                            ((ImageView) widget).setImageBitmap(myBitmap);
+                        }catch (OutOfMemoryError e){
+                            e.printStackTrace();
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = false;
+                            options.inPreferredConfig = Bitmap.Config.ARGB_4444;
+                            options.inDither = true;
+                            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
+                            ((ImageView) widget).setImageBitmap(myBitmap);
+                        }
                     }
                 } else {
                     ((ImageView) widget).setImageResource(R.drawable.widget_blue);

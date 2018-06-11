@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         FragmentManager fragmentManager = getSupportFragmentManager();
                         fragmentManager.beginTransaction()
                                 .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
-                                .replace(R.id.root_frame, fragmentSelectedApps)
+                                .replace(R.id.root_frame, new FragmentSelectedApps2())
                                 .commit();
                         searchView.setVisibility(View.GONE);
                         View view = getCurrentFocus();
@@ -361,10 +361,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     void openBrowserDialogRecycleView() {
-        DialogBrowserWithIconRecycleview dialogBrowser = new DialogBrowserWithIconRecycleview(this);
-        dialogBrowser.getWindow().getAttributes().windowAnimations = R.style.DialogAnimationUpDown;
-        dialogBrowser.setCallbacks(this);
-        dialogBrowser.show();
+        try{
+            DialogBrowserWithIconRecycleview dialogBrowser = new DialogBrowserWithIconRecycleview(this);
+            dialogBrowser.getWindow().getAttributes().windowAnimations = R.style.DialogAnimationUpDown;
+            dialogBrowser.setCallbacks(this);
+            dialogBrowser.show();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
