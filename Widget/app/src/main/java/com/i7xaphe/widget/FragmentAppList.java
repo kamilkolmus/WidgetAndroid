@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +21,6 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
@@ -34,7 +35,7 @@ import java.util.List;
 
 public class FragmentAppList extends Fragment {
 
-    RecyclerView recyclerView;
+    CustomRecyclerView recyclerView;
     MyAdapter adapter;
 
     PackageManager manager;
@@ -63,11 +64,33 @@ public class FragmentAppList extends Fragment {
         filteredPackageInfoList = new ArrayList<>();
         listMemoryAdapter = new MyFileReader(file);
         manager = getContext().getPackageManager();
-        recyclerView = (RecyclerView) v.findViewById(R.id.recylerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayout.VERTICAL, false)); // zmieni!1
+        recyclerView = (CustomRecyclerView) v.findViewById(R.id.recylerview);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext()) {
+
+            @Override
+            public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+                LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getContext()) {
+
+                    private static final float SPEED = 300f;// Change this value (default=25f)
+
+                    @Override
+                    protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                        return SPEED / displayMetrics.densityDpi;
+                    }
+
+                };
+                smoothScroller.setTargetPosition(position);
+                startSmoothScroll(smoothScroller);
+            }
+
+        };
+
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(getContext(), recyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
+                        view.startAnimation(AnimationUtils.loadAnimation(getContext(),R.anim.icon_click_anim));
                         CheckBox checkBox =view.findViewById(R.id.ch_card);
                         if (checkBox.isChecked()) {
                             listMemoryAdapter.removeLine(filteredPackageInfoList.get(position).packageName);
@@ -89,7 +112,7 @@ public class FragmentAppList extends Fragment {
 
         adapter = new MyAdapter();
         recyclerView.setAdapter(adapter);
-        changeDataInRecyclerView(filter);
+        setDataInRecyclerView(filter);
 
         return v;
     }
@@ -117,7 +140,7 @@ public class FragmentAppList extends Fragment {
         }
     }
 
-    void changeDataInRecyclerView(String filter) {
+    void setDataInRecyclerView(String filter) {
         this.filter = filter;
         new MyAsyncTask().execute();
     }

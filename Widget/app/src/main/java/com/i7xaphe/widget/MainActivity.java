@@ -61,58 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     DrawerLayout drawer;
     private Menu menu;
 
-    List<String> getGrantedPermissions(final String appPackage) {
-        List<String> granted = new ArrayList<String>();
-        try {
-            PackageInfo pi = getPackageManager().getPackageInfo(appPackage, PackageManager.GET_PERMISSIONS);
-            for (int i = 0; i < pi.requestedPermissions.length; i++) {
-                if ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
-                    granted.add(pi.requestedPermissions[i]);
-                }
-            }
-        } catch (Exception e) {
-        }
-        return granted;
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            //WRITE_EXTERNAL_STORAGE
-            case 1: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //enable WRITE_EXTERNAL_STORAGE
-                    closeProgressDialog();
-                } else {
-                    //disable WRITE_EXTERNAL_STORAGE
-                    Toast.makeText(MainActivity.this, "Permission denied to write your storage", Toast.LENGTH_SHORT).show();
-                    this.finish();
-                    System.exit(0);
-                }
-                return;
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (Settings.canDrawOverlays(this)) {
-                Intent i = getBaseContext().getPackageManager()
-                        .getLaunchIntentForPackage(getBaseContext().getPackageName());
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                finish();
-                startActivity(i);
-            } else {
-                finish();
-                System.exit(0);
-            }
-        }
-
-    }
 
 
     @Override
@@ -124,127 +73,123 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sheredpreferences = getSharedPreferences(sharePref, Context.MODE_PRIVATE);
         editor = sheredpreferences.edit();
 
-        boolean drawOwerlay = true;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            drawOwerlay = Settings.canDrawOverlays(getApplicationContext());
-        }
+            if (!Settings.canDrawOverlays(getApplicationContext())) {
 
-        if (!drawOwerlay) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 1);
+                return;
 
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-            intent.setData(Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, 1);
-
-        } else {
-
-            Log.e("PERMISION", "arr: " + Arrays.toString(new List[]{getGrantedPermissions("com.i7xaphe.widget")}));
-
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-
-
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.setTag(0);
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-                public void onDrawerClosed(View v) {
-                    super.onDrawerClosed(v);
-                    globalId = (int)drawer.getTag();
-                    if (globalId == R.id.applist) {
-                        if (!fragmentAppList.isResumed()) {
-                            FragmentManager fragmentManager = getSupportFragmentManager();
-                            fragmentManager.beginTransaction()
-                                    .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
-                                    .replace(R.id.root_frame, fragmentAppList)
-                                    .commit();
-                            searchView.setVisibility(View.VISIBLE);
-                        }
-
-                    } else if (globalId == R.id.selected_apps) {
-                        if (!fragmentDragAndDrop.isResumed()) {
-                            fragmentDragAndDrop = new FragmentDragAndDrop();
-                            FragmentManager fragmentManager = getSupportFragmentManager();
-                            fragmentManager.beginTransaction()
-                                    .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
-                                    .replace(R.id.root_frame, fragmentDragAndDrop)
-                                    .commit();
-                            searchView.setVisibility(View.GONE);
-                            View view = getCurrentFocus();
-                            if (view != null) {
-                                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                            }
-
-                        }
-                    } else if (globalId == R.id.settings) {
-                        if (!fragmentSettings.isResumed()) {
-                            FragmentManager fragmentManager = getSupportFragmentManager();
-                            fragmentManager.beginTransaction()
-                                    .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
-                                    .replace(R.id.root_frame, fragmentSettings)
-                                    .commit();
-                            searchView.setVisibility(View.GONE);
-
-                            View view = getCurrentFocus();
-                            if (view != null) {
-                                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                            }
-
-                        }
-                    } else if (globalId == R.id.widget) {
-                        MenuItem menuItem = menu.findItem(R.id.widget);
-                        if (!stopService(new Intent(getBaseContext(), Widget.class))) {
-                            startService(new Intent(getBaseContext(), Widget.class));
-                            menuItem.setTitle(R.string.close_widget);
-                        } else {
-                            menuItem.setTitle(R.string.open_widget);
-                        }
-
-                    } else if (globalId == R.id.close_app) {
-
-                        finish();
-                    } else if (globalId == R.id.test_activity) {
-
-                        openBrowserDialogRecycleView();
-
-                    } else if (globalId == R.id.about) {
-                        Snackbar.make(findViewById(android.R.id.content).getRootView(), R.string.version_info, Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
-
-                    }
-
-
-                }
-            };
-
-            drawer.setDrawerListener(toggle);
-            toggle.syncState();
-
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-            navigationView.setNavigationItemSelectedListener(this);
-
-
-            fragmentAppList = new FragmentAppList();
-            fragmentSettings = new FragmentSettings();
-            fragmentDragAndDrop = new FragmentDragAndDrop();
-
-            editor.putInt("ID", getTaskId());
-            editor.apply();
-
-            openProgressDialog();
-            //check for necessary permission
-            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        1);
-            } else {
-                closeProgressDialog();
             }
 
         }
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.setTag(0);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            public void onDrawerClosed(View v) {
+                super.onDrawerClosed(v);
+                globalId = (int) drawer.getTag();
+                if (globalId == R.id.applist) {
+                    if (!fragmentAppList.isResumed()) {
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction()
+                                .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
+                                .replace(R.id.root_frame, fragmentAppList)
+                                .commit();
+                        searchView.setVisibility(View.VISIBLE);
+                    }
+
+                } else if (globalId == R.id.selected_apps) {
+                    if (!fragmentDragAndDrop.isResumed()) {
+                        fragmentDragAndDrop = new FragmentDragAndDrop();
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction()
+                                .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
+                                .replace(R.id.root_frame, fragmentDragAndDrop)
+                                .commit();
+                        searchView.setVisibility(View.GONE);
+                        View view = getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
+
+                    }
+                } else if (globalId == R.id.settings) {
+                    if (!fragmentSettings.isResumed()) {
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction()
+                                .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
+                                .replace(R.id.root_frame, fragmentSettings)
+                                .commit();
+                        searchView.setVisibility(View.GONE);
+
+                        View view = getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
+
+                    }
+                } else if (globalId == R.id.widget) {
+                    MenuItem menuItem = ((NavigationView) findViewById(R.id.nav_view)).getMenu().findItem(R.id.widget);
+                    if (!stopService(new Intent(getBaseContext(), Widget.class))) {
+                        startService(new Intent(getBaseContext(), Widget.class));
+                        menuItem.setTitle(R.string.close_widget);
+                    } else {
+                        menuItem.setTitle(R.string.open_widget);
+                    }
+
+                } else if (globalId == R.id.close_app) {
+
+                    finish();
+                } else if (globalId == R.id.test_activity) {
+
+                    openBrowserDialogRecycleView();
+
+                } else if (globalId == R.id.about) {
+                    Snackbar.make(findViewById(android.R.id.content).getRootView(), R.string.version_info, Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+
+                }
+
+
+            }
+        };
+
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+
+        fragmentAppList = new FragmentAppList();
+        fragmentSettings = new FragmentSettings();
+        fragmentDragAndDrop = new FragmentDragAndDrop();
+
+        editor.putInt("ID", getTaskId());
+        editor.apply();
+
+        openProgressDialog();
+        //check for necessary permission
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    1);
+        } else {
+            closeProgressDialog();
+        }
+
 
     }
 
@@ -271,9 +216,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu=menu;
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main, menu);
+        this.menu = menu;
         searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         searchView.setOnQueryTextListener(this);
         return super.onCreateOptionsMenu(menu);
@@ -370,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                fragmentAppList.changeDataInRecyclerView(newText);
+                fragmentAppList.setDataInRecyclerView(newText);
                 Log.i("onQueryTextChange", "onQueryTextChange");
             }
         });
@@ -441,6 +386,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.setCancelable(false);
         dialog.setInverseBackgroundForced(false);
         dialog.show();
+
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            //WRITE_EXTERNAL_STORAGE
+            case 1: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //enable WRITE_EXTERNAL_STORAGE
+                    closeProgressDialog();
+                } else {
+                    //disable WRITE_EXTERNAL_STORAGE
+                    Toast.makeText(MainActivity.this, "Permission denied to write your storage", Toast.LENGTH_SHORT).show();
+                    this.finish();
+                    System.exit(0);
+                }
+                return;
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Settings.canDrawOverlays(this)) {
+                Intent i = getBaseContext().getPackageManager()
+                        .getLaunchIntentForPackage(getBaseContext().getPackageName());
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                finish();
+                startActivity(i);
+            } else {
+                finish();
+                System.exit(0);
+            }
+        }
 
     }
 
