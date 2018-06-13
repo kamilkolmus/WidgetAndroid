@@ -28,12 +28,16 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class FragmentSelectedApps2 extends Fragment {
+public class FragmentDragAndDrop extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
 
 
@@ -48,15 +52,13 @@ public class FragmentSelectedApps2 extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_selected_apps_2,container,false);
+        View v = inflater.inflate(R.layout.fragment_drag_and_drop,container,false);
 
+        MobileAds.initialize(getContext(), "ca-app-pub-3940256099942544~3347511713");
+        AdView mAdView = (AdView) v.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
-        return v;
-    }
-
-    @Override
-    public void onViewCreated(View v, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(v, savedInstanceState);
         sheredpreferences = getActivity().getSharedPreferences(MainActivity.sharePref, Context.MODE_PRIVATE);
         editor = sheredpreferences.edit();
 
@@ -222,8 +224,14 @@ public class FragmentSelectedApps2 extends Fragment {
             constraintSet.applyTo(constraintLayout);
         }
 
-
+        return v;
     }
+
+
+
+
+
+
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));

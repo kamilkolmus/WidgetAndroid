@@ -393,6 +393,24 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
         @Override
         public void run() {
             //ustawieniewartości wiekszej niż 10 żeby
+            Animation animation=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.widget_long_press);
+            widget.startAnimation(animation);
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    animationCallBacks.onWidgetLongClickStart();
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                   animationCallBacks.onWidgetLongClickEnd();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
             showActivity = 200;
             openApp(getBaseContext(), "com.i7xaphe.widget");
         }
@@ -794,6 +812,18 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
         Log.i("ANIMCALLBACKS", "onWidgetAnimWhenIconShowEnd");
         //  unLockClickWidgetPossibility();
         widget.setTag(ACTION_HIDE);
+    }
+
+    @Override
+    public void onWidgetLongClickStart() {
+
+    }
+
+    @Override
+    public void onWidgetLongClickEnd() {
+        if(widget.isInTouchMode()){
+            widget.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.widget_longrotate));
+        }
     }
 
     //wywoływana w momencie puszczenia widgetu bez pokazywania/chowania  icon

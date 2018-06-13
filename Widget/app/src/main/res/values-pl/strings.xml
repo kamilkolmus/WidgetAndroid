@@ -46,4 +46,5 @@
     <string name="rotate_animation_on">ANIMACJA OBROTU WŁĄCZONE</string>
     <string name="rotate_animation_off">ANIMACJA OBROTU WYŁĄCZONE</string>
     <string name="step">KORK</string>
+    <string name="drag_end_drop">PRZECIĄGNIJ I UPUŚĆ</string>
 </resources>

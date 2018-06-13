@@ -14,7 +14,8 @@ public interface AnimationCallBacks {
     void onWidgetAnimWhenIconShowStart();
     void onWidgetAnimWhenIconShowHalf();
     void onWidgetAnimWhenIconShowEnd();
-
+    void onWidgetLongClickStart();
+    void onWidgetLongClickEnd();
 
 
 }

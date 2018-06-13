@@ -48,8 +48,9 @@
     <string name="rotate_circle_anim_off">CIRCLE ANIMATION OFF</string>
     <string name="step">STEP</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="drag_end_drop">DRAG AND DROP</string>
 
+    <string name="open_drawer" translatable="false">open drawer</string>
+    <string name="close_drawer" translatable="false">close drawer</string>
 
 </resources>
