@@ -52,5 +52,6 @@
 
     <string name="open_drawer" translatable="false">open drawer</string>
     <string name="close_drawer" translatable="false">close drawer</string>
+    <string name="action_search">Search</string>
 
 </resources>

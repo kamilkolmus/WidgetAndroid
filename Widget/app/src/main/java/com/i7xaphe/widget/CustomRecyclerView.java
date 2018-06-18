@@ -24,8 +24,8 @@ public class CustomRecyclerView extends RecyclerView {
     @Override
     public boolean fling(int velocityX, int velocityY) {
 
-        velocityY *= 0.35;
-        velocityX *= 0.35;
+        velocityY *= 0.935;
+        velocityX *= 0.935;
 
         return super.fling(velocityX, velocityY);
     }

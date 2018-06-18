@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -28,6 +29,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
@@ -38,13 +43,14 @@ import java.util.Map;
 /**
  * Created by Kamil on 2016-08-23.
  */
-public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterView.OnItemClickListener {
+public class DialogBrowserWithIconRecycleview extends Dialog  {
 
     private String pathFull;
     List<String> historyPath;
     List<Integer> historyPosition;
     RecyclerView recyclerView;
     private dialogBroswerCallbacks dialogBroswerCallbacks;
+    ImageLoader imageLoader;
 
     TextView tvPath;
 
@@ -76,6 +82,9 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
         int width = displayMetrics.widthPixels;
         int height = displayMetrics.heightPixels;
         getWindow().setLayout((int) (width * 0.9), (int) (height * 0.8));
+
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration.createDefault(getContext()));
 
         historyPath = new ArrayList<>();
         historyPosition = new ArrayList<>();
@@ -119,25 +128,10 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
             }
         });
 
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
-        String filename = (String) parent.getItemAtPosition(position);
-
-        if (new File(pathFull + File.separator + filename).isDirectory()) {
-            historyPath.add(pathFull);
-            historyPosition.add(position);
-            pathFull = pathFull + File.separator + filename;
-            tvPath.setText("Root" + pathFull.substring(19));
-            setMyAdapter(pathFull, 0);
-        } else {
-            dialogBroswerCallbacks.onFileSelect(pathFull + File.separator + filename);
-        }
 
     }
+
+
 
     void setMyAdapter(String filePath, int position) {
         List<String> values = new ArrayList();
@@ -246,99 +240,62 @@ public class DialogBrowserWithIconRecycleview extends Dialog implements AdapterV
 
         @Override
         public void onBindViewHolder(final MyViewHolder holder, final int position) {
-            holder.tv.setText("" + list.get(position));
-            new Handler().post(new Runnable() {
+
+            holder.tv.setText(list.get(position));
+
+            if (new File(pathFull + File.separator + list.get(position)).isDirectory()) {
+                holder.img.setImageResource(R.drawable.folderandroid);
+            } else if ((list.get(position)).endsWith(".bmp") || (list.get(position)).endsWith(".BMP") ||
+                    (list.get(position)).endsWith(".png") || (list.get(position)).endsWith(".PNG") ||
+                    (list.get(position)).endsWith(".gif") || (list.get(position)).endsWith(".GIF") ||
+                    (list.get(position)).endsWith(".jpg") || (list.get(position)).endsWith(".JPG")) {
+                Log.e("imageLoader", "file://" + pathFull + File.separator + list.get(position));
+                ImageSize targetSize = new ImageSize(64, 64);
+                imageLoader.displayImage("file://" + pathFull + File.separator + list.get(position), holder.img,targetSize);
+
+            } else {
+              //  final Drawable icon = match.loadIcon(getPackageManager());
+                holder.img.setImageResource(R.drawable.otherfile);
+            }
+
+            holder.button.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public void run() {
-                    if (new File(pathFull + File.separator + list.get(position)).isDirectory()) {
-                        holder.img.setImageResource(R.drawable.folderandroid);
-                    } else if ((list.get(position)).endsWith(".bmp") || (list.get(position)).endsWith(".BMP") ||
-                            (list.get(position)).endsWith(".png") || (list.get(position)).endsWith(".PNG") ||
-                            (list.get(position)).endsWith(".gif") || (list.get(position)).endsWith(".GIF") ||
-                            (list.get(position)).endsWith(".jpg") || (list.get(position)).endsWith(".JPG")) {
-
-                        Thread thread = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    File imgFile = new File(pathFull + File.separator + list.get(position));
-                                    BitmapFactory.Options options = new BitmapFactory.Options();
-                                    options.inJustDecodeBounds = false;
-                                    options.inPreferredConfig = Bitmap.Config.ARGB_4444;
-                                    options.inDither = true;
-                                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
-                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                    myBitmap.compress(Bitmap.CompressFormat.PNG, 10, stream);
-                                    byte[] byteArray = stream.toByteArray();
-                                    final Bitmap compressedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-
-                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            holder.img.setImageBitmap(Bitmap.createScaledBitmap(compressedBitmap, 64, 64, false));
-                                            Log.d("UI thread", "I am the UI thread");
-                                        }
-                                    });
-                                } catch (OutOfMemoryError e) {
-                                    e.printStackTrace();
+                public boolean onLongClick(final View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage("Delete " + list.get(position) + "?")
+                            .setCancelable(false)
+                            .setPositiveButton("Yes", new OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    File file = new File(pathFull + File.separator + list.get(position));
+                                    if (file.delete()) {
+                                        Animation animation = AnimationUtils.loadAnimation(context, R.anim.delete_anim);
+                                        holder.button.startAnimation(animation);
+                                        holder.img.startAnimation(animation);
+                                        holder.tv.startAnimation(animation);
+                                        Toast.makeText(getContext(), list.get(position) + " was deleted", Toast.LENGTH_SHORT).show();
+                                        list.remove(position);
+                                        new android.os.Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                notifyDataSetChanged();
+                                            }
+                                        }, 300);
+                                    } else {
+                                        Toast.makeText(getContext(), "Cannot delete " + list.get(position), Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-
-                            }
-                        });
-                        thread.start();
-
-                    } else {
-                        holder.img.setImageResource(R.drawable.otherfile);
-                    }
-
+                            })
+                            .setNegativeButton("No", new OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                    return true;
                 }
             });
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    holder.button.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(final View v) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                            builder.setMessage("Delete " + list.get(position) + "?")
-                                    .setCancelable(false)
-                                    .setPositiveButton("Yes", new OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            File file = new File(pathFull + File.separator + list.get(position));
-                                            if (file.delete()) {
-                                                Animation animation = AnimationUtils.loadAnimation(context, R.anim.delete_anim);
-                                                holder.button.startAnimation(animation);
-                                                holder.img.startAnimation(animation);
-                                                holder.tv.startAnimation(animation);
-                                                Toast.makeText(getContext(), list.get(position) + " was deleted", Toast.LENGTH_SHORT).show();
-                                                list.remove(position);
-                                                new android.os.Handler().postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
 
-                                                        notifyDataSetChanged();
-
-                                                    }
-                                                }, 300);
-
-                                            } else {
-                                                Toast.makeText(getContext(), "Cannot delete " + list.get(position), Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    })
-                                    .setNegativeButton("No", new OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.cancel();
-                                        }
-                                    });
-                            AlertDialog alert = builder.create();
-                            alert.show();
-
-                            return true;
-                        }
-                    });
-                }
-            }, 100);
 
         }
 

@@ -5,14 +5,17 @@
     <group android:checkableBehavior="single"
         android:id="@+id/topPanel">
         <item
+            android:background="?attr/selectableItemBackground"
             android:icon="@drawable/list2"
             android:id="@+id/applist"
             android:title="@string/applications" />
         <item
+            android:background="?attr/selectableItemBackground"
             android:icon="@drawable/list1"
             android:id="@+id/selected_apps"
             android:title="@string/selected_applications" />
         <item
+            android:background="?attr/selectableItemBackground"
             android:icon="@android:drawable/ic_menu_manage"
         android:id="@+id/settings"
         android:title="@string/settings" />
@@ -23,10 +26,12 @@
         android:id="@+id/midPanel"
        >
         <item
+            android:background="?attr/selectableItemBackground"
             android:icon="@android:drawable/ic_notification_clear_all"
             android:id="@+id/widget"
             android:title="@string/close_widget" />
         <item
+            android:background="?attr/selectableItemBackground"
             android:icon="@android:drawable/ic_menu_close_clear_cancel"
             android:id="@+id/close_app"
             android:title="@string/close_application" />

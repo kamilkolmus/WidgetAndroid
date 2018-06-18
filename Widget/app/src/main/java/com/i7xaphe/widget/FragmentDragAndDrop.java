@@ -251,8 +251,8 @@ public class FragmentDragAndDrop extends Fragment {
 
             BitmapDrawable bitmapDrawable = null;
             try {
-                bitmapDrawable = (BitmapDrawable)packageManager.getActivityIcon(packageManager.getLaunchIntentForPackage((String)v.getTag()));
-            } catch (PackageManager.NameNotFoundException e) {
+                bitmapDrawable=(BitmapDrawable)packageManager.getActivityIcon(packageManager.getLaunchIntentForPackage((String)v.getTag()));
+            } catch (PackageManager.NameNotFoundException |NullPointerException e) {
                 e.printStackTrace();
             }
             shadow= bitmapDrawable.getBitmap();
@@ -381,7 +381,7 @@ public class FragmentDragAndDrop extends Fragment {
                                 packedList.addToList((String) imageButtonArrayList.get(i).getTag());
                             }
                             packedList.confirmChanges();
-                            ((MainActivity) getActivity()).startWidget();
+                            ((MainActivity) getActivity()).restartWidget();
                         }
                         v.invalidate();
                     }

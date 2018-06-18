@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
@@ -30,11 +31,15 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import java.io.File;
 import java.io.IOException;
-import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.Random;
+
+import static com.i7xaphe.widget.Utils.openApp;
 
 public class Widget extends Service implements View.OnTouchListener, AnimationCallBacks {
 
@@ -46,6 +51,8 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
     double y;
     double pressedX;
     double pressedY;
+
+    ImageLoader imageLoader;
 
     //
     ConstraintLayout constraintLayout;
@@ -89,6 +96,9 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
         super.onCreate();
         sheredpreferences = getSharedPreferences(MainActivity.sharePref, Context.MODE_PRIVATE);
         editor = sheredpreferences.edit();
+
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration.createDefault(getApplicationContext()));
 
         packageManager = getApplicationContext().getPackageManager();
         File file = new File(MainActivity.fileFULL);
@@ -171,19 +181,8 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
             case 0:
                 File imgFile = new File(sheredpreferences.getString("pngFile", ""));
                 if (imgFile.exists()) {
-                    if (!isWidgetGif) {
-                        try {
-                            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                            ((ImageView) widget).setImageBitmap(myBitmap);
-                        }catch (OutOfMemoryError e){
-                            e.printStackTrace();
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inJustDecodeBounds = false;
-                            options.inPreferredConfig = Bitmap.Config.ARGB_4444;
-                            options.inDither = true;
-                            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
-                            ((ImageView) widget).setImageBitmap(myBitmap);
-                        }
+                   if (!isWidgetGif) {
+                        imageLoader.displayImage("file://"+sheredpreferences.getString("pngFile", ""),((ImageView) widget));
                     }
                 } else {
                     ((ImageView) widget).setImageResource(R.drawable.widget_blue);
@@ -362,29 +361,6 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
     }
 
 
-    public boolean openApp(Context context, String packageName) {
-        PackageManager manager = context.getPackageManager();
-
-
-        try {
-            Intent intent = manager.getLaunchIntentForPackage(packageName);
-            if (intent == null) {
-                return false;
-            }
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            //             intent.setAction(Intent.ACTION_MAIN);
-//                intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            getBaseContext().startActivity(intent);
-            // context.startActivity(intent);
-            Log.i("opening another app", "true");
-            return true;
-        } catch (Exception e) {
-            Log.e("opening another app", "true");
-            return false;
-        }
-
-
-    }
 
 
     //==================================================================================================
@@ -393,7 +369,14 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
         @Override
         public void run() {
             //ustawieniewartości wiekszej niż 10 żeby
-            Animation animation=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.widget_long_press);
+            Animation animation;
+            if (sheredpreferences.getBoolean("rotateAnim", MySettings.rotateAnim)) {
+
+                animation=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.widget_long_press_rotate);
+            }else{
+                animation=AnimationUtils.loadAnimation(getApplicationContext(),R.anim.widget_long_press);
+            }
+
             widget.startAnimation(animation);
             animation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
@@ -776,8 +759,9 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
                     imageButtonArrayList.get(finalI).setVisibility(View.VISIBLE);
                     try {
                         imageButtonArrayList.get(finalI).setImageDrawable(packageManager.getActivityIcon(packageManager.getLaunchIntentForPackage(packedList.getElement(finalI))));
-                    } catch (PackageManager.NameNotFoundException e) {
+                    } catch (PackageManager.NameNotFoundException | NullPointerException e) {
                         e.printStackTrace();
+                        imageButtonArrayList.get(finalI).setImageResource(R.drawable.mono_point);
                     }
                     if (finalI == 0) {
                         animationCallBacks.onShowIconAnimationStart();
@@ -822,7 +806,9 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
     @Override
     public void onWidgetLongClickEnd() {
         if(widget.isInTouchMode()){
-            widget.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.widget_longrotate));
+            if (sheredpreferences.getBoolean("rotateAnim", MySettings.rotateAnim)) {
+                widget.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.widget_longrotate));
+            }
         }
     }
 

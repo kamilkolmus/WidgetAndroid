@@ -558,7 +558,7 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
 
 
     void widgetRestrart() {
-        ((MainActivity) getActivity()).startWidget();
+        ((MainActivity) getActivity()).restartWidget();
 
     }
 

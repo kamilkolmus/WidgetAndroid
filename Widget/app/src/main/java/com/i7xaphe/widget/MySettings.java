@@ -6,8 +6,7 @@ package com.i7xaphe.widget;
 public class MySettings {
     public static int widgetSize = 40;
     public static int iconSize = 26;
-    public static int radius = 43;
-    public static double scaleY = 1.05;
+    public static int radius = 65;
     public static int alpha = 90;
     public static boolean iconShowHide = true;
     public static boolean boundariesOn = true;

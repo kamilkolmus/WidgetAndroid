@@ -1,23 +1,23 @@
 package com.i7xaphe.widget;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
@@ -30,7 +30,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -38,7 +37,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -49,42 +47,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SharedPreferences.Editor editor;
     public static String sharePref = "com.i7xaphe.widget";
     public static String fileFULL = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "widget" + File.separator + "file.txt";
-    static List<PackageInfo> packageInfos;
-    static List<Drawable> packageIcon;
+    //static List<ResolveInfo> appInfos;
+    static List<ItemAppListModel> itemAppListModelList;
     ProgressDialog dialog;
     FragmentAppList fragmentAppList;
     FragmentSettings fragmentSettings;
     FragmentDragAndDrop fragmentDragAndDrop;
     SearchView searchView;
-    int globalId = 0;
-    public final static int REQUEST_CODE = 10101;
     DrawerLayout drawer;
-    private Menu menu;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //check nessesery permision
+
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    1);
+        }else{
+            showProgressDialog();
+        }
 
         sheredpreferences = getSharedPreferences(sharePref, Context.MODE_PRIVATE);
         editor = sheredpreferences.edit();
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(getApplicationContext())) {
-
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, 1);
-                return;
-
-            }
-
-        }
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -96,81 +84,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.setTag(0);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+                this, drawer ,toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             public void onDrawerClosed(View v) {
                 super.onDrawerClosed(v);
-                globalId = (int) drawer.getTag();
-                if (globalId == R.id.applist) {
-                    if (!fragmentAppList.isResumed()) {
-                        FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction()
-                                .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
-                                .replace(R.id.root_frame, fragmentAppList)
-                                .commit();
-                        searchView.setVisibility(View.VISIBLE);
-                    }
-
-                } else if (globalId == R.id.selected_apps) {
-                    if (!fragmentDragAndDrop.isResumed()) {
-                        fragmentDragAndDrop = new FragmentDragAndDrop();
-                        FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction()
-                                .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
-                                .replace(R.id.root_frame, fragmentDragAndDrop)
-                                .commit();
-                        searchView.setVisibility(View.GONE);
-                        View view = getCurrentFocus();
-                        if (view != null) {
-                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        }
-
-                    }
-                } else if (globalId == R.id.settings) {
-                    if (!fragmentSettings.isResumed()) {
-                        FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction()
-                                .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
-                                .replace(R.id.root_frame, fragmentSettings)
-                                .commit();
-                        searchView.setVisibility(View.GONE);
-
-                        View view = getCurrentFocus();
-                        if (view != null) {
-                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        }
-
-                    }
-                } else if (globalId == R.id.widget) {
-                    MenuItem menuItem = ((NavigationView) findViewById(R.id.nav_view)).getMenu().findItem(R.id.widget);
-                    if (!stopService(new Intent(getBaseContext(), Widget.class))) {
-                        startService(new Intent(getBaseContext(), Widget.class));
-                        menuItem.setTitle(R.string.close_widget);
-                    } else {
-                        menuItem.setTitle(R.string.open_widget);
-                    }
-
-                } else if (globalId == R.id.close_app) {
-
-                    finish();
-                } else if (globalId == R.id.test_activity) {
-
-                    openBrowserDialogRecycleView();
-
-                } else if (globalId == R.id.about) {
-                    Snackbar.make(findViewById(android.R.id.content).getRootView(), R.string.version_info, Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-
-                }
-
-
+                onDrawerClick((int)drawer.getTag());
             }
         };
 
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
 
         fragmentAppList = new FragmentAppList();
         fragmentSettings = new FragmentSettings();
@@ -179,23 +101,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         editor.putInt("ID", getTaskId());
         editor.apply();
 
-        openProgressDialog();
-        //check for necessary permission
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    1);
-        } else {
-            closeProgressDialog();
-        }
 
 
     }
 
-    public static List<PackageInfo> getPackageInfos() {
-        return packageInfos;
-    }
 
     @Override
     protected void onResume() {
@@ -216,9 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.main, menu);
-        this.menu = menu;
+        getMenuInflater().inflate(R.menu.main, menu);
         searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         searchView.setOnQueryTextListener(this);
         return super.onCreateOptionsMenu(menu);
@@ -260,15 +167,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(final MenuItem item) {
 
         drawer.setTag(item.getItemId());
-        drawer.closeDrawer(GravityCompat.START);
+        drawer.closeDrawers();
+
+
         return true;
     }
 
-    void startWidget() {
+    void restartWidget() {
 
-        stopService(new Intent(getBaseContext(), Widget.class));
-        startService(new Intent(getBaseContext(), Widget.class));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(getApplicationContext())) {
 
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 1);
+                return;
+
+            }else{
+                stopService(new Intent(getBaseContext(), Widget.class));
+                startService(new Intent(getBaseContext(), Widget.class));
+            }
+        }
     }
 
     @Override
@@ -280,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             editor.putInt("widgetColor", 0);
             editor.commit();
             //     fragmentSettings.restartSpinnerWidget();
-            startWidget();
+            restartWidget();
         } else {
             Toast.makeText(getBaseContext(), "it's not png, jpg, bmp or gif file", Toast.LENGTH_LONG).show();
         }
@@ -312,81 +231,164 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onQueryTextChange(final String newText) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                fragmentAppList.setDataInRecyclerView(newText);
-                Log.i("onQueryTextChange", "onQueryTextChange");
-            }
-        });
+
+        fragmentAppList.setDataInRecyclerView(newText);
+        Log.i("onQueryTextChange", "onQueryTextChange");
 
         return false;
     }
 
-    void closeProgressDialog() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                PackageManager manager = getApplicationContext().getPackageManager();
-                packageInfos = manager.getInstalledPackages(PackageManager.GET_ACTIVITIES);
-                packageIcon = new ArrayList<>();
-                for (int i = 0; i < packageInfos.size(); i++) {
-                    try {
-                        Drawable drawable;
-                        if (manager.getActivityIcon(manager.getLaunchIntentForPackage(packageInfos.get(i).packageName)) == null) {
-                        } else {
-                            //         packageIcon.add(packageManager.getActivityIcon(packageManager.getLaunchIntentForPackage(packageInfos.get(i).packageName)));
-                        }
-                    } catch (NullPointerException e) {
-                        packageInfos.remove(i);
-                        i--;
-                    } catch (PackageManager.NameNotFoundException e) {
-                        packageInfos.remove(i);
-                        i--;
-                    }
-
-                }
-                Collections.sort(packageInfos, new Comparator<PackageInfo>() {
-                    @Override
-                    public int compare(PackageInfo lhs, PackageInfo rhs) {
-                        PackageManager manager = getApplicationContext().getPackageManager();
-                        return lhs.applicationInfo.loadLabel(manager).toString().compareTo(rhs.applicationInfo.loadLabel(manager).toString());
-                    }
-                });
-
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog.hide();
-                        dialog.cancel();
-                        try {
-                            FragmentManager fragmentManager = getSupportFragmentManager();
-                            fragmentManager.beginTransaction()
-                                    .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
-                                    .replace(R.id.root_frame, fragmentAppList)
-                                    .addToBackStack("applist")
-                                    .commit();
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        startWidget();
-                    }
-                });
-                Log.i("List Fragment", "on Create");
-            }
-        }).start();
 
 
-    }
+    @SuppressLint("StaticFieldLeak")
+    void showProgressDialog() {
 
-    void openProgressDialog() {
         dialog = new ProgressDialog(this);
         dialog.setMessage(getString(R.string.load_apps));
         dialog.setCancelable(false);
         dialog.setInverseBackgroundForced(false);
         dialog.show();
 
+        new AsyncTask<Void,Void,Void>(){
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                try {
+                    loadAppListFragment();
+                    dialog.hide();
+                    dialog.cancel();
+                    restartWidget();
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+                mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+                final PackageManager manager = getApplicationContext().getPackageManager();
+
+
+                List<ResolveInfo> appInfos = getApplicationContext().getPackageManager().queryIntentActivities( mainIntent, 0);
+
+//                Collections.sort(appInfos, new Comparator<ResolveInfo>() {
+//                    @Override
+//                    public int compare(ResolveInfo a, ResolveInfo b) {
+//                        return a.loadLabel(manager).toString().toUpperCase().compareTo(b.loadLabel(manager).toString().toUpperCase());
+//                    }
+//                });
+
+                itemAppListModelList=new ArrayList<>();
+                for(int i = 0; i<appInfos.size(); i++){
+                    itemAppListModelList.add(new ItemAppListModel(i,getApplicationContext(),appInfos.get(i),manager));
+                }
+
+                return null;
+            }
+        }.execute();
+
+    }
+
+
+
+
+    void onDrawerClick(int code){
+        if (code== R.id.applist) {
+            loadAppListFragment();
+        } else if (code == R.id.selected_apps) {
+           loadDragAndDropFragment();
+        } else if (code== R.id.settings) {
+            loadSettingsFragment();
+        } else if (code == R.id.widget) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, 1);
+                } else {
+                    MenuItem menuItem = ((NavigationView) findViewById(R.id.nav_view)).getMenu().findItem(R.id.widget);
+                    if (!stopService(new Intent(getBaseContext(), Widget.class))) {
+                        startService(new Intent(getBaseContext(), Widget.class));
+                        menuItem.setTitle(R.string.close_widget);
+                    } else {
+                        menuItem.setTitle(R.string.open_widget);
+                    }
+                }
+            }
+
+        } else if (code== R.id.close_app) {
+
+            finish();
+        } else if (code == R.id.test_activity) {
+
+            openBrowserDialogRecycleView();
+
+        } else if (code == R.id.about) {
+            Snackbar.make(findViewById(android.R.id.content).getRootView(), R.string.version_info, Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+        }
+
+
+    }
+    void loadAppListFragment(){
+
+        if (!fragmentAppList.isResumed()) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                 //   .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
+                    .replace(R.id.root_frame, fragmentAppList)
+                    .addToBackStack("fragmentAppList")
+                    .commit();
+            searchView.setVisibility(View.VISIBLE);
+        }
+
+    }
+    void loadDragAndDropFragment(){
+
+        if (!fragmentDragAndDrop.isResumed()) {
+            fragmentDragAndDrop = new FragmentDragAndDrop();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                  //  .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
+                    .replace(R.id.root_frame, fragmentDragAndDrop)
+                    .addToBackStack("fragmentDragAndDrop")
+                    .commit();
+            searchView.setVisibility(View.GONE);
+            View view = getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+
+        }
+    }
+
+    void loadSettingsFragment(){
+
+        if (!fragmentSettings.isResumed()) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                //    .setCustomAnimations(R.anim.show_fragment, R.anim.hide_fragment)
+                    .replace(R.id.root_frame, fragmentSettings)
+                    .addToBackStack("fragmentSettings")
+                    .commit();
+            searchView.setVisibility(View.GONE);
+
+            View view = getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+
+        }
     }
 
 
@@ -396,12 +398,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (requestCode) {
             //WRITE_EXTERNAL_STORAGE
             case 1: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //enable WRITE_EXTERNAL_STORAGE
-                    closeProgressDialog();
+                Log.e("onRequestPermissions","onRequestPermissionsResult");
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showProgressDialog();
                 } else {
-                    //disable WRITE_EXTERNAL_STORAGE
                     Toast.makeText(MainActivity.this, "Permission denied to write your storage", Toast.LENGTH_SHORT).show();
                     this.finish();
                     System.exit(0);
@@ -414,19 +414,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        Log.e("onActivityResult","onActivityResult");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (Settings.canDrawOverlays(this)) {
-                Intent i = getBaseContext().getPackageManager()
-                        .getLaunchIntentForPackage(getBaseContext().getPackageName());
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                finish();
-                startActivity(i);
+                restartWidget();
+                MenuItem menuItem = ((NavigationView) findViewById(R.id.nav_view)).getMenu().findItem(R.id.widget);
+                menuItem.setTitle(R.string.close_widget);
             } else {
-                finish();
-                System.exit(0);
+                MenuItem menuItem = ((NavigationView) findViewById(R.id.nav_view)).getMenu().findItem(R.id.widget);
+                menuItem.setTitle(R.string.open_widget);
             }
         }
-
     }
 
 }
