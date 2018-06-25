@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.i7xaphe.widget.Utils.dpToPx;
 import static com.i7xaphe.widget.Utils.openApp;
 
 public class Widget extends Service implements View.OnTouchListener, AnimationCallBacks {
@@ -213,8 +214,8 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
         }
 
 
-        int widgetSize = dpToPx(sheredpreferences.getInt("widgetSize", MySettings.widgetSize));
-        int iconSize = dpToPx(sheredpreferences.getInt("iconSize", MySettings.iconSize));
+        int widgetSize = dpToPx(getApplicationContext(),sheredpreferences.getInt("widgetSize", MySettings.widgetSize));
+        int iconSize = dpToPx(getApplicationContext(),sheredpreferences.getInt("iconSize", MySettings.iconSize));
 
 
         //WIEKOSC WIDGET
@@ -240,7 +241,7 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
             (widget).getLayoutParams().width = widgetSize;
         }
 
-        int radius = dpToPx(sheredpreferences.getInt("radius", MySettings.radius));
+        int radius = dpToPx(getApplicationContext(),sheredpreferences.getInt("radius", MySettings.radius));
         float nbPackedes = packedList.getListSize();
         float angle;
         try {
@@ -535,18 +536,7 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
         startForeground(NOTIFICATION_ID, notification);
     }
 
-    public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return px;
-    }
 
-
-    public int pxToDp(int px) {
-        DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
-        int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return dp;
-    }
 
     private void runOnUiThread(Runnable runnable) {
         new Handler().postAtFrontOfQueue(runnable);
@@ -908,7 +898,7 @@ public class Widget extends Service implements View.OnTouchListener, AnimationCa
             } catch (ArithmeticException e) {
                 angle = 0;
             }
-            radius = dpToPx(sheredpreferences.getInt("radius", MySettings.radius));
+            radius = dpToPx(getApplicationContext(),sheredpreferences.getInt("radius", MySettings.radius));
             constraintSet=new ConstraintSet();
             step=sheredpreferences.getFloat("circleAnimStep", MySettings.circleAnimStep);
             stepCount=0;

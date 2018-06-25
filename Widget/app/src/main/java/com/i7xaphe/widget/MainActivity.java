@@ -3,16 +3,19 @@ package com.i7xaphe.widget;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -35,10 +38,10 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DialogBrowserWithIconRecycleview.dialogBroswerCallbacks, SearchView.OnQueryTextListener {
@@ -56,6 +59,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SearchView searchView;
     DrawerLayout drawer;
 
+    private static final int REQUEST_CODE_FILE_CHOOSER = 6384; // onActivityResult request
+    private static final int REQUEST_CODE_ACTION_MANAGE_OVERLAY_PERMISSION = 1235; // onActivityResult request
+
+    private static final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE= 1234; // onActivityResult request
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    1);
+                    REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE);
         }else{
             showProgressDialog();
         }
@@ -85,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.setTag(0);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer ,toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+
             public void onDrawerClosed(View v) {
                 super.onDrawerClosed(v);
                 onDrawerClick((int)drawer.getTag());
@@ -180,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                 intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, REQUEST_CODE_ACTION_MANAGE_OVERLAY_PERMISSION);
                 return;
 
             }else{
@@ -219,6 +228,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+     void openFileChooser() {
+
+         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+         // Filter to only show results that can be "opened", such as a
+         // file (as opposed to a list of contacts or timezones)
+         intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+         // Filter to show only images, using the image MIME data type.
+         // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
+         // To search for all documents available via installed storage providers,
+         // it would be "*/*".
+         intent.setType("image/*");
+
+         startActivityForResult(intent, REQUEST_CODE_FILE_CHOOSER);
+
+
+    }
+
     @Override
     public boolean onQueryTextSubmit(String query) {
         View view = this.getCurrentFocus();
@@ -230,11 +258,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public boolean onQueryTextChange(final String newText) {
+    public boolean onQueryTextChange(final String query) {
 
-        fragmentAppList.setDataInRecyclerView(newText);
-        Log.i("onQueryTextChange", "onQueryTextChange");
-
+        fragmentAppList.setDataInRecyclerView(query);
         return false;
     }
 
@@ -258,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     dialog.hide();
                     dialog.cancel();
                     restartWidget();
+           //         showChooser();
                 }catch (NullPointerException e){
                     e.printStackTrace();
                 }
@@ -308,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (!Settings.canDrawOverlays(this)) {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                     intent.setData(Uri.parse("package:" + getPackageName()));
-                    startActivityForResult(intent, 1);
+                    startActivityForResult(intent, REQUEST_CODE_ACTION_MANAGE_OVERLAY_PERMISSION);
                 } else {
                     MenuItem menuItem = ((NavigationView) findViewById(R.id.nav_view)).getMenu().findItem(R.id.widget);
                     if (!stopService(new Intent(getBaseContext(), Widget.class))) {
@@ -338,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     void loadAppListFragment(){
 
         if (!fragmentAppList.isResumed()) {
+
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
                      .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -397,7 +425,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             //WRITE_EXTERNAL_STORAGE
-            case 1: {
+            case REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE: {
                 Log.e("onRequestPermissions","onRequestPermissionsResult");
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     showProgressDialog();
@@ -411,20 +439,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.e("onActivityResult","onActivityResult");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (Settings.canDrawOverlays(this)) {
-                restartWidget();
-                MenuItem menuItem = ((NavigationView) findViewById(R.id.nav_view)).getMenu().findItem(R.id.widget);
-                menuItem.setTitle(R.string.close_widget);
-            } else {
-                MenuItem menuItem = ((NavigationView) findViewById(R.id.nav_view)).getMenu().findItem(R.id.widget);
-                menuItem.setTitle(R.string.open_widget);
-            }
+
+        switch (requestCode) {
+            case REQUEST_CODE_FILE_CHOOSER:
+                if (data != null) {
+                    Log.e("onActivityResult",""+requestCode+" "+ data.getData());
+                }else{
+                    Log.e("onActivityResult",""+requestCode+" "+ "NULL");
+                }
+
+                // If the file selection was successful
+                if (resultCode == RESULT_OK) {
+                    Uri imageUri = data.getData();
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                        fragmentSettings.setImage(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,
+                            "data != RESULT_OK" , Toast.LENGTH_LONG).show();
+
+                }
+                break;
+            case REQUEST_CODE_ACTION_MANAGE_OVERLAY_PERMISSION:
+                Log.e("onActivityResult","onActivityResult");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (Settings.canDrawOverlays(this)) {
+                        restartWidget();
+                        MenuItem menuItem = ((NavigationView) findViewById(R.id.nav_view)).getMenu().findItem(R.id.widget);
+                        menuItem.setTitle(R.string.close_widget);
+                    } else {
+                        MenuItem menuItem = ((NavigationView) findViewById(R.id.nav_view)).getMenu().findItem(R.id.widget);
+                        menuItem.setTitle(R.string.open_widget);
+                    }
+                }
+                break;
+
         }
+
+
     }
 
 }

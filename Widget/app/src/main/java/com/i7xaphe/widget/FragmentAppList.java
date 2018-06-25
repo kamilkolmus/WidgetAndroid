@@ -3,9 +3,14 @@ package com.i7xaphe.widget;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.i7xaphe.widget.Utils.dpToPx;
+
 
 public class FragmentAppList extends Fragment {
 
@@ -35,8 +42,7 @@ public class FragmentAppList extends Fragment {
     PackageManager manager;
     MyFileReader listMemoryAdapter;
 
-
-
+    FloatingActionButton floatingActionButton;
     MyAdapter mAdapter;
 
     @Override
@@ -60,7 +66,18 @@ public class FragmentAppList extends Fragment {
         manager = getContext().getPackageManager();
         recyclerView = (CustomRecyclerView) v.findViewById(R.id.recylerview);
 
+        floatingActionButton=v.findViewById(R.id.floating_action_button);
+       // floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
 
+        floatingActionButton.setBackgroundTintMode(PorterDuff.Mode.DARKEN);
+        floatingActionButton.setImageResource(R.drawable.check_box_outline_blank_white_72x72);
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFloatingButtonClick();
+            }
+        });
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext()) ;
@@ -108,7 +125,7 @@ public class FragmentAppList extends Fragment {
 
 
 
-    private static List<ItemAppListModel> filter(List<ItemAppListModel> models, String query) {
+    private  List<ItemAppListModel> filter(List<ItemAppListModel> models, String query) {
         final String lowerCaseQuery = query.toLowerCase();
 
         final List<ItemAppListModel> filteredModelList = new ArrayList<>();
@@ -126,7 +143,43 @@ public class FragmentAppList extends Fragment {
         mAdapter.replaceAll(filteredModelList);
         recyclerView.scrollToPosition(0);
 
+        if(floatingActionButton.getTag().equals("hide")){
+            floatingActionButton.setTag("show");
+           floatingActionButton.setImageResource(R.drawable.check_box_outline_blank_white_72x72);
+        }
 
+
+    }
+
+
+    public void onFloatingButtonClick() {
+        if(floatingActionButton.getTag().equals("show")){
+            floatingActionButton.setTag("hide");
+          //  view.set
+            setSelectedAppsInRecyclerView(true);
+            floatingActionButton.setImageResource(R.drawable.check_box_white_72x72);
+        }else{
+            floatingActionButton.setTag("show");
+            setSelectedAppsInRecyclerView(false);
+            floatingActionButton.setImageResource(R.drawable.check_box_outline_blank_white_72x72);
+        }
+
+    }
+
+    void setSelectedAppsInRecyclerView(boolean filter){
+
+        if(filter){
+            final List<ItemAppListModel> filteredModelList = new ArrayList<>();
+            for (ItemAppListModel model : MainActivity.itemAppListModelList) {
+                if (listMemoryAdapter.checkIfExist(model.getAppPacked())) {
+                    filteredModelList.add(model);
+                }
+            }
+            mAdapter.replaceAll(filteredModelList);
+        }else{
+            mAdapter.replaceAll(MainActivity.itemAppListModelList);
+        }
+        recyclerView.scrollToPosition(0);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 

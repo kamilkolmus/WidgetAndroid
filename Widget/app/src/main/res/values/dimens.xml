@@ -13,4 +13,9 @@
     <dimen name="switch_margin">25dp</dimen>
     <dimen name="ll_margin">50dp</dimen>
 
+
+
+   //filechooser
+    <dimen name="list_padding">0dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
 </resources>

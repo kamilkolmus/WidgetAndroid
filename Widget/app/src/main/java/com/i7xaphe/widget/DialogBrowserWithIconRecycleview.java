@@ -51,7 +51,7 @@ public class DialogBrowserWithIconRecycleview extends Dialog  {
     RecyclerView recyclerView;
     private dialogBroswerCallbacks dialogBroswerCallbacks;
     ImageLoader imageLoader;
-
+    String root="Phone";
     TextView tvPath;
 
     LinearLayoutManager linearLayoutManager;
@@ -91,7 +91,7 @@ public class DialogBrowserWithIconRecycleview extends Dialog  {
         pathFull = Environment.getExternalStorageDirectory().getPath();
         Log.i("pathFull", "path length" + pathFull.length());
         tvPath = (TextView) findViewById(R.id.tv_path);
-        tvPath.setText("Root" + pathFull.substring(19));
+        tvPath.setText(root + pathFull.substring(19));
 
         recyclerView = (RecyclerView) findViewById(R.id.list);
         linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayout.VERTICAL, false);
@@ -120,7 +120,7 @@ public class DialogBrowserWithIconRecycleview extends Dialog  {
                 //        hide();
                 if (!historyPath.isEmpty()) {
                     pathFull = historyPath.get(historyPath.size() - 1);
-                    tvPath.setText("Root" + pathFull.substring(19));
+                    tvPath.setText(root + pathFull.substring(19));
                     setMyAdapter(historyPath.get(historyPath.size() - 1), historyPosition.get(historyPosition.size() - 1));
                     historyPath.remove(historyPath.size() - 1);
                     historyPosition.remove(historyPosition.size() - 1);
@@ -189,7 +189,7 @@ public class DialogBrowserWithIconRecycleview extends Dialog  {
                         historyPath.add(pathFull);
                         historyPosition.add(itemPosition);
                         pathFull = pathFull + File.separator + list.get(itemPosition);
-                        tvPath.setText("Root" + pathFull.substring(19));
+                        tvPath.setText(root + pathFull.substring(19));
                         Animation animation = AnimationUtils.loadAnimation(context, R.anim.button_press_fast_fast);
                         v.startAnimation(animation);
                         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -255,7 +255,7 @@ public class DialogBrowserWithIconRecycleview extends Dialog  {
 
             } else {
               //  final Drawable icon = match.loadIcon(getPackageManager());
-                holder.img.setImageResource(R.drawable.otherfile);
+                holder.img.setImageResource(R.drawable.file);
             }
 
             holder.button.setOnLongClickListener(new View.OnLongClickListener() {

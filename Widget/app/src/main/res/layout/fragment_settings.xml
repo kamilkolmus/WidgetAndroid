@@ -481,14 +481,38 @@
                     android:layout_gravity="center_horizontal" />
 
             </LinearLayout>
+
             <Button
-                android:layout_marginTop="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/custom_widget"
                 android:id="@+id/b_custom_widget"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="10dp"
-                android:layout_gravity="center_horizontal" />
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:text="@string/custom_widget"
+                android:textColor="@color/cardview_light_background" />
+
+            <Button
+                android:id="@+id/b_custom_widget2"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/cardview_dark_background"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:text="@string/custom_widget"
+                android:textColor="@color/cardview_light_background"
+                android:visibility="gone"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/imagetest"
+                android:visibility="gone"/>
         </LinearLayout>
     </ScrollView>
 

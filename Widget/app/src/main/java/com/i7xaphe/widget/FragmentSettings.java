@@ -1,7 +1,11 @@
 package com.i7xaphe.widget;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -14,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -24,22 +29,29 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.i7xaphe.widget.Utils.round;
 
 /**
  * Created by Kamil on 2016-08-13.
  */
-public class FragmentSettings extends Fragment implements View.OnTouchListener{
+public class FragmentSettings extends Fragment {
     private SeekBar sb_size, sb_radius,sb_icon,sb_alpha,sb_rotate_freq, sb_circle_freq,sb_circle_step;
     private TextView tv_size, tv_radius,tv_icon,tv_alpha,tv_rotate_freq, tv_circle_freq,tv_circle_step;
     SharedPreferences sheredpreferences;
     SharedPreferences.Editor editor;
     Spinner spinnerColor;
     boolean spinnerFirstSelectio = false;
+
+    ImageView imageView;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_settings,container,false);
+
+        imageView=v.findViewById(R.id.imagetest);
 
         MobileAds.initialize(getContext(), "ca-app-pub-3940256099942544~3347511713");
         AdView mAdView = (AdView) v.findViewById(R.id.adView);
@@ -467,9 +479,6 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
         });
 
 
-
-
-
         spinnerColor = (Spinner) v.findViewById(R.id.spinner_color);
 
         List<String> categories = new ArrayList<String>();
@@ -509,8 +518,17 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
                 ((MainActivity) getActivity()).openBrowserDialogRecycleView();
             }
         });
+
+        Button bCastomWidget2 = (Button) v.findViewById(R.id.b_custom_widget2);
+        bCastomWidget2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) getActivity()).openFileChooser();
+            }
+        });
         return v;
     }
+
 
     @Override
     public void onStart() {
@@ -524,39 +542,6 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
 
     }
 
-    public double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-        long factor = (long) Math.pow(10, places);
-        value = value * factor;
-        long tmp = Math.round(value);
-        return (double) tmp / factor;
-    }
-
-    float dX, dY;
-    @Override
-    public boolean onTouch(View view, MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-
-                dX = view.getX() - event.getRawX();
-                dY = view.getY() - event.getRawY();
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-
-                view.animate()
-                        .x(event.getRawX() + dX)
-                        .y(event.getRawY() + dY)
-                        .setDuration(0)
-                        .start();
-                break;
-            default:
-                return false;
-        }
-        return true;
-    }
-
-
     void widgetRestrart() {
         ((MainActivity) getActivity()).restartWidget();
 
@@ -564,6 +549,10 @@ public class FragmentSettings extends Fragment implements View.OnTouchListener{
 
     public void restartSpinnerWidget() {
         spinnerColor.setSelection(sheredpreferences.getInt("widgetColor", MySettings.widgetColor));
+    }
+
+    public void setImage(Bitmap image) {
+        imageView.setImageDrawable(new BitmapDrawable(getResources(), image));
     }
 
 }
